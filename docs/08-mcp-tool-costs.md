@@ -20,19 +20,19 @@ Free Space:    55.3k (28%)
 Buffer:        40.4k (20%)
 ```
 
-**VS Code Copilot:** no equivalent command, but you can estimate your `System/Tools` baseline by counting active MCP servers × tools × ~200 tokens average (see §2.7.2). Also audit extensions that add skills, agents, MCP servers, or tool surfaces. If an extension injects tools you do not need for coding, disable it for that workspace or move coding work into a VS Code profile with only the essentials enabled.
+**VS Code Copilot:** inspect the loaded tools and extensions for the task. An installed server count alone does not establish token cost: hosts can defer definitions. If an extension injects tools you do not need for coding, disable it for that workspace or use a focused VS Code profile.
 
-**The critical distinction — always-loaded vs. on-demand:**
+**Distinguish installed, loaded, and on-demand content:**
 
 | Component | Loads | In context window? |
 |-----------|:-----:|:------------------:|
-| MCP tool definitions | Every message | ✅ Yes |
-| Agent instructions / `copilot-instructions.md` | Every message | ✅ Yes |
-| System prompt | Every message | ✅ Yes (not controllable) |
-| Copilot CLI skills (`.copilot/skills/`) | On request only | ❌ On disk only |
-| Conversation history | Accumulates per turn | ✅ Yes |
+| MCP tool definitions | Full catalog or deferred discovery, depending on host | Loaded definitions and discovery metadata |
+| Applicable agent/repo instructions | When selected or matched | Loaded instructions |
+| System prompt | Each model request | Yes |
+| Skills | Discovery metadata first; full instructions on invocation | Metadata and any invoked guidance |
+| Conversation history | Accumulates, subject to compaction | History retained in the request |
 
-Unloaded skills in `.copilot/skills/` do not increase the `System/Tools` baseline. To reduce that number, inspect MCP definitions and always-on instructions rather than file sizes on disk.
+Shortening a skill whose body never loads does not save that body's tokens. Inspect loaded definitions, discovery metadata, and instructions rather than file sizes on disk. Use focused skills for occasional guidance and MCP servers for the live capabilities the task needs; neither has a fixed cost advantage.
 
 > Choose tools and the agent before a long session. Changing `System/Tools` can invalidate the cached request prefix. If the task needs a different setup, start a fresh session with a short handoff. See [Caching §2.3.5](04-context-management.md#235-caching-store-and-reuse-context-within-prompts).
 
@@ -85,7 +85,7 @@ A single `read_file` call might cost 50 tokens to invoke but return 2,000 tokens
 
 ## 2.7.4 Before and After: MCP Server Audit
 
-**Before — "I enabled everything" (15 MCP servers):**
+**Illustrative full-catalog setup, not a measured Copilot run. Before — "I enabled everything" (15 MCP servers):**
 
 | Server | Tools | ~Tokens/step |
 |--------|:-----:|:------------:|
@@ -104,9 +104,9 @@ A single `read_file` call might cost 50 tokens to invoke but return 2,000 tokens
 | Calendar | 6 | 600 |
 | Search (Brave) | 3 | 300 |
 | Context7 | 2 | 200 |
-| **Total** | **187** | **~17,700** |
+| **Total** | **187** | **~18,700** |
 
-At 15 agent steps: **265,500 tokens** just for tool schemas.
+At 15 agent steps: **280,500 tokens** just for tool schemas.
 
 **After — "Only what I need for coding" (3 MCP servers):**
 
@@ -119,7 +119,7 @@ At 15 agent steps: **265,500 tokens** just for tool schemas.
 
 At 15 agent steps: **75,000 tokens** for tool schemas.
 
-**Savings: 190,500 tokens per agent task.** That's 72% less token overhead from tool definitions alone.
+In this hypothetical setup, the difference is **205,500 schema tokens**, about 73%. This is not a measured task or bill reduction; caching and deferred loading change the calculation.
 
 ## 2.7.5 Configuring MCP Servers Per-Workspace
 
@@ -162,9 +162,9 @@ Disable servers the current task does not need. Their loaded definitions add con
 1. **Audit your MCP servers** — run through your enabled servers. Do you actually use all of them? Disable the rest
 2. **Task-based enabling** — working on DB migrations? Enable the Postgres MCP. Done? Disable it
 3. **Prefer built-in tools** — VS Code's built-in tools (file read/write, terminal, search) are already loaded by the agent. Adding an MCP filesystem server on top is redundant
-4. **Watch tool count** — if you have 100+ tools enabled, you're adding thousands of tokens per step on definitions alone
+4. **Watch loaded definitions** — a large active catalog can add thousands of tokens per step; an enabled but deferred tool is different
 5. **Custom instructions help** — add "Minimize tool calls. Read files only when necessary." to reduce call frequency
-6. **Use skills instead of MCPs for occasional capabilities** — MCP tool schemas load on every step whether used or not. Skills load only title and description upfront; the full content pulls on demand. If a capability is used in fewer than half your sessions, a skill is cheaper. See [Practical Setup §4.2](10-practical-setup.md#mcps-vs-skills-eager-vs-lazy-context-loading) for the full comparison
+6. **Use on-demand guidance for occasional capabilities** — skills can teach precise CLI patterns without adding another tool server. Hosts differ in how they defer MCP definitions; measure loaded context rather than assuming every schema is always present.
 7. **Optional, Copilot CLI only: try CodeAct for long tool chains** — external plugin [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin) collapses many small tool hops into one sandboxed execution. That does not shrink any one server's schema, but it can reduce how often the full tool catalog gets replayed on CLI-heavy tasks
 8. **Use a focused custom agent for repeat coding workflows** — a custom agent can carry a narrow tool list and stable instructions, so the same coding workflow starts with the same active surface instead of whatever the default chat currently exposes. Where your Copilot surface supports model selection in agent/profile files, pin the intended model there too
 9. **Compress tool output at the source with RTK or snip** — [RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) and [`snip`](https://github.com/edouard-claude/snip) are CLI proxies that filter the *results* of shell commands before they reach the agent. Reductions are real but vary by command, project output volume, and hook reliability. See §2.7.7 and §2.7.8
@@ -359,6 +359,43 @@ After (+ slim instructions): System/Tools 25.5k (13%) — Free Space 67%
 ```
 
 When `System/Tools` is high, inspect large plugins first. In this case, one plugin accounted for more context than the other MCP servers combined. Full writeup: [dfberry.github.io](https://dfberry.github.io/2026-05-06-tuning-up-copilot-context).
+
+---
+
+## 2.7.11 Persistent codebase maps: Graphify
+
+New agent sessions often reread files to understand imports, call paths, and component layout. [Graphify](https://github.com/Graphify-Labs/graphify) parses the repo with tree-sitter AST and writes a persistent graph for structural queries.
+
+![Persistent graph navigation: build a map, then query structure instead of repeating broad file reads.](assets/diagrams/graphify-navigation.svg)
+
+```bash
+uv tool install graphifyy
+
+# Build or update the graph in the repo
+graphify .
+
+# Query targeted structure instead of reading broad files
+graphify query "where is auth middleware?"
+graphify explain "UserService"
+graphify path "Router" "Database"
+```
+
+Core outputs:
+
+```text
+graphify-out/
+├── graph.json       queryable graph for agents
+├── graph.html       interactive visual explorer
+└── GRAPH_REPORT.md  human-readable communities, god nodes, and suggested questions
+```
+
+Use it for large repos, repeated sessions, and cross-file structural questions. Skip it when reading a few known files already finishes the task.
+
+- Rebuild stale graphs after refactors, or use update/watch/hook flows.
+- Treat the generated report as a map, not source code.
+- Decide whether to share graph files or ignore them and build locally. Do not commit sensitive source relationships against repo policy.
+- AST extraction is local. Optional semantic/deep extraction over docs or media may use a configured AI backend.
+- Graphify reduces repeated orientation reads; RTK or snip reduces shell-result size. They address different costs.
 
 ---
 

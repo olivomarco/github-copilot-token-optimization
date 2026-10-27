@@ -30,20 +30,23 @@ extra_css:
   - stylesheets/extra.css
 nav:
   - Home: index.md
-  - Part 1:
+  - Start here:
       - Why Tokens Matter: 01-why-tokens-matter.md
-  - Part 2:
+      - Practical Setup: 10-practical-setup.md
+  - Requests and responses:
+      - Output Control: 05-output-control.md
       - Prompt Compression: 02-prompt-compression.md
       - Language Comparison: 03-language-comparison.md
+  - Loaded context:
       - Context Management: 04-context-management.md
-      - Output Control: 05-output-control.md
-      - Workflow Optimization: 06-workflow-optimization.md
       - Always-On Context Problem: 07-agents-md-problem.md
+  - Tools:
       - MCP & Tool Costs: 08-mcp-tool-costs.md
-  - Part 3:
-      - Comparisons & Data: 09-comparisons-data.md
-  - Part 4:
-      - Practical Setup: 10-practical-setup.md
+  - Workflow and rework:
+      - Workflow Optimization: 06-workflow-optimization.md
+      - Outcome per Token: 13-outcome-per-token.md
+  - Billing controls:
       - Model Selection & Pricing: 11-models-and-pricing.md
       - Enterprise Governance: 12-enterprise-governance.md
-      - Outcome per Token: 13-outcome-per-token.md
+  - Evidence:
+      - Comparisons & Data: 09-comparisons-data.md

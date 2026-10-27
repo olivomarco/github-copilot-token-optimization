@@ -12,65 +12,13 @@ Copilot loads `.github/copilot-instructions.md` on every interaction. Shortening
 
 A 500-word instruction file at ~700 tokens adds that input to every interaction, before your question.
 
-**Before — natural English (~30 tokens):**
-
-```text
-You should write terse responses like a caveman. Make sure all technical substance
-remains exact. Only remove unnecessary filler words. Drop articles and hedging.
-Use fragments when appropriate. Keep code unchanged. Use short synonyms where possible.
-```
-
-**After — compressed (~12 tokens):**
-
-```text
-Terse like caveman. Technical substance exact. Only fluff die.
-Drop: articles, filler (just/really/basically), pleasantries, hedging.
-Fragments OK. Short synonyms. Code unchanged.
-```
-
-**Savings: 60%.** Multiply by every interaction in a session. Over 50 interactions, that's 900 tokens saved from this one file alone.
-
-**Real-world example:** This repo's own `.github/copilot-instructions.md` is already compressed:
-
-```text
-Terse like caveman. Technical substance exact. Only fluff die.
-Drop: articles, filler (just/really/basically), pleasantries, hedging.
-Fragments OK. Short synonyms. Code unchanged.
-Pattern: [thing] [action] [reason]. [next step].
-ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
-Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
-```
-
-About 50 tokens, loaded on every interaction.
+Remove duplicate and irrelevant rules before shortening individual sentences. Use the [starter template](10-practical-setup.md#step-1-set-a-concise-response-default) for response preferences and the [research filter](07-agents-md-problem.md#265-what-to-actually-put-in-context-files) for project guidance.
 
 ## 2.3.2 Memory File Compression
 
 Projects also accumulate `CLAUDE.md`, project notes, coding guidelines, and `.cursorrules`. When these files enter context, they add input tokens. Remove duplicate guidance before shortening individual files.
 
-**Before (~40 tokens):**
-
-```text
-You should always make sure to run the test suite before pushing any changes
-to the main branch. This is important because it helps catch bugs early and
-prevents broken builds from being deployed to production.
-```
-
-**After (~15 tokens):**
-
-```text
-Run tests before push to main. Catch bugs early, prevent broken prod deploys.
-```
-
-**Savings: 62%.** The technical meaning is identical.
-
-**Compression rules:**
-
-- Remove articles, filler, hedging, pleasantries
-- Use short synonyms and fragments
-- **Preserve ALL:** code blocks, inline code, URLs, file paths, technical terms
-- Keep markdown structure (headings, lists, tables)
-
-Shorten memory files that become always-on context. Keep occasional checklists outside the prompt and load them only when needed.
+Delete stale notes and repeated rules. Preserve commands, paths, negation, conditions, and step order. Keep occasional checklists outside the prompt. A smaller file helps only if that file would otherwise be loaded.
 
 ## 2.3.3 Strategic File Organization
 
@@ -126,6 +74,8 @@ pip install 'markitdown[pdf,docx,pptx,xlsx]'
 
 Security note: MarkItDown reads files, streams, and URLs with the privileges of the current process. For untrusted inputs, validate paths and URLs first, and prefer the narrowest conversion API that fits the workflow.
 
+<span id="scoping-guidance"></span>
+
 ## 2.3.4 Scope Context Intentionally — Conditional Over Always-On
 
 Keep path-specific rules out of always-on context. A React component task does not need database migration guidelines. Load those rules conditionally.
@@ -158,13 +108,13 @@ Treat small prompt files, slash-command snippets, or saved checklists as the hom
 
 ### The rule
 
-- **Always-on:** the few rules that genuinely apply to every interaction (style, naming, "code only").
+- **Always-on:** the few rules that genuinely apply to every interaction, such as project-wide conventions.
 - **Conditional (`applyTo`):** anything path-specific (per-language, per-module, per-layer).
 - **On-demand note / MCP:** anything workflow-specific that's invoked occasionally.
 
-The guide estimates 50-80% less per-interaction context when broad always-on files become scoped guidance. Keep the rules each task needs.
+The reduction depends on which files would otherwise load. Keep the rules each task needs; compare the actual loaded context before and after scoping.
 
-> **Measure loaded context, not file size on disk.** Copilot CLI loads skills in `.copilot/skills/` on demand. Shortening an unloaded skill does not reduce the `System/Tools` baseline. Focus first on MCP definitions and always-on instructions. See [MCP & Tool Costs §2.7](08-mcp-tool-costs.md) for measurement.
+> **Measure loaded context, not file size on disk.** Skills can contribute discovery metadata before their full instructions load. See [MCP & Tool Costs §2.7](08-mcp-tool-costs.md) for the loaded/deferred distinction.
 
 ## 2.3.5 Caching — Store and Reuse Context Within Prompts
 
@@ -184,12 +134,10 @@ Three ways to preserve reusable context:
 
 | Mid-session change | Effect on cache & context |
 |--------------------|---------------------------|
-| **Switch model or reasoning effort** | Caches are typically per-model, and changing model configuration can discard the cached prefix. The carried history may then be billed again at standard input rates in the new lane. Pick both before work starts; see [Model-switch rule](11-models-and-pricing.md#anti-patterns). |
+| **Switch model or reasoning effort** | Caches are typically per-model, and changing model configuration can discard the cached prefix. Carried history may be processed again under the new configuration. See [model and effort selection](11-models-and-pricing.md#good-default-heuristics). |
 | **Switch custom agent** | Swaps the system prompt, tool set, and instructions — the prefix changes, so the cache is invalidated and the prior accumulated context becomes pollution under the new agent. |
 | **Toggle MCP servers, tools, or loaded skills** | Changes the harness and its tool/instruction definitions in the prefix — cache invalidated, plus you add or remove always-loaded tokens on every later turn. |
 | **Churn large context** | Attaching/detaching big files or pasting large blobs reshuffles context and undercuts prefix stability. Choose your files and context up front. |
-
-The pattern: **decide model, agent, and tool set before you start; if you genuinely need a different one, start a fresh session** with only the relevant summary and files rather than mutating a long one. (Billing implementation varies by surface and plan, so treat this as risk control rather than guaranteed repricing math.)
 
 Cached prefixes can reduce both processing time and input cost.
 
@@ -218,17 +166,9 @@ v          v             v
 [large prefix invalidated or repriced] -> cache discount lost; start fresh instead
 ```
 
-### Protect the cache: avoid cache-busting changes mid-thread
-
-Keep these controls stable during a long thread. Skill changes matter when they alter the session's instructions or tools:
-
-```text
-{ model, reasoning effort, loaded skills, active MCP/tool set, agent/profile }
-```
-
-If you need to change any item in that tuple, start a fresh conversation with a compact handoff summary instead of changing it in place.
-
 ### Safe handoff pattern when a switch is required
+
+Choose model, effort, agent, and tools before long work. When a different setup is needed, start fresh with relevant context rather than carrying the full thread. Billing behavior varies by surface and plan; this is not guaranteed repricing math.
 
 1. Summarize current thread in 5-10 bullets (decisions, constraints, open tasks).
 2. Start a new chat with the new model/agent/MCP setup.
@@ -251,48 +191,7 @@ Conversation history accumulates. After 20+ messages, you might have 50K+ tokens
 
 ## 2.3.7 Persistent Graphs — Replace Per-Session File Reads
 
-New agent sessions often reread files to understand imports, call paths, and component layout. In large repos, this orientation can consume thousands of tokens before the first edit.
-
-[Graphify](https://github.com/Graphify-Labs/graphify) parses the repo with tree-sitter AST and writes `graphify-out/graph.json`. Agents can query this persistent graph instead of repeating structural file reads.
-
-![Persistent graph navigation: Graphify builds a shared graph once, then agents query paths and explanations instead of rereading broad file sets.](assets/diagrams/graphify-navigation.svg)
-
-```bash
-uv tool install graphifyy
-
-# Build or update the graph in the repo
-graphify .
-
-# Query targeted structure instead of reading broad files
-graphify query "where is auth middleware?"
-graphify explain "UserService"
-graphify path "Router" "Database"
-```
-
-Core outputs:
-
-```text
-graphify-out/
-├── graph.json       queryable graph for agents
-├── graph.html       interactive visual explorer
-└── GRAPH_REPORT.md  human-readable communities, god nodes, and suggested questions
-```
-
-**When this helps most:**
-
-- large codebases where agents routinely start by reading 5-10 files for orientation
-- repeated agent sessions over the same repo
-- cross-file questions where a path/query answer is cheaper than broad file reads
-- teams that can share the same graph build across developers or agents
-
-**When to skip:** tiny repos where the agent reads two files and finishes. The one-time graph build is overhead if there is no repeated navigation cost to amortize.
-
-**Caveats:**
-
-- Code extraction is local and deterministic for the AST pass; optional semantic/deep extraction over docs, PDFs, images, or media may use a configured AI backend.
-- The graph can go stale after large refactors. Rebuild it or use Graphify's update/watch/hook flows where appropriate.
-- `GRAPH_REPORT.md` is generated output. Treat it as a map, not the source of truth.
-- Graphify complements RTK or snip. Graphify reduces repeated codebase-navigation input; shell-output filters compress verbose command results.
+If repeated structural file reads dominate context, consider a persistent codebase map. [Graphify setup, outputs, and limitations](08-mcp-tool-costs.md#2711-persistent-codebase-maps-graphify) live with the other tools.
 
 ---
 

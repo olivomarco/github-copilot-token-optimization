@@ -79,31 +79,9 @@ Root cause gets fixed → delete that line.
 
 Add guidance when a recurring mistake needs it. Remove that guidance when the underlying problem is fixed.
 
-## 2.6.7 This Repo's Approach: 6 Lines, ~50 Tokens
+## 2.6.7 Apply the filter
 
-This project's `.github/copilot-instructions.md`:
-
-```text
-Terse like caveman. Technical substance exact. Only fluff die.
-Drop: articles, filler (just/really/basically), pleasantries, hedging.
-Fragments OK. Short synonyms. Code unchanged.
-Pattern: [thing] [action] [reason]. [next step].
-ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
-Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
-```
-
-**6 lines. ~50 tokens.** Loaded every interaction.
-
-Compare this with a typical `/init` file of **200+ lines, ~1,500 tokens**: a difference of 1,450 tokens per load. Keep the extra guidance only if it helps the agent complete the task.
-
-**The math over a session:**
-
-| Context File Style | Tokens per Load | 50 Interactions | Agent (20 steps) |
-|-------------------|:--------------:|:---------------:|:----------------:|
-| `/init` generated (200 lines) | ~1,500 | 75,000 | 30,000 |
-| Typical hand-written (50 lines) | ~400 | 20,000 | 8,000 |
-| Caveman-compressed (6 lines) | ~50 | 2,500 | 1,000 |
-| **Savings (caveman vs /init)** | **1,450** | **72,500** | **29,000** |
+Use the [starter template](10-practical-setup.md#step-1-set-a-concise-response-default) for response preferences, then add only project-specific pitfalls. Follow [Context Management](04-context-management.md#scoping-guidance) for global, scoped, and on-demand placement.
 
 ---
 

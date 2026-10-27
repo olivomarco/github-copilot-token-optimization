@@ -51,7 +51,7 @@ Classical Chinese can express the same idea in fewer characters than modern Chin
 
 | Mode | Text | ~Tokens |
 |------|------|---------|
-| English (full caveman) | "Pool reuse open DB conn. Skip handshake → fast." | ~12 |
+| Terse English | "Pool reuse open DB conn. Skip handshake → fast." | ~12 |
 | Wenyan-full | "池reuse conn。skip handshake → fast。" | ~15 |
 | Wenyan-ultra | "池reuse conn。skip→fast。" | ~12 |
 

@@ -65,11 +65,12 @@ Severity prefixes encode priority in 1-2 tokens:
 |------|-----------|-----|
 | "What does this function do?" | Ask | Single-shot answer. No tool use needed |
 | "What's the TypeScript syntax for generics?" | Ask | Knowledge question |
+| "Update validation in these known files" | Edit, where available | Bounded changes with explicit context |
 | "Refactor this module to use dependency injection" | Agent | Multi-file changes, needs to read/write code |
 | "Create a REST API with tests and docs" | Agent | Multi-step creation task |
 | "Why is this test failing?" | Ask (usually) | Often needs just the error + context you provide |
 
-**Savings: 60-90% per simple question** by using Ask instead of Agent.
+Ask can avoid an unnecessary tool loop. The difference depends on what Agent would actually load and do; there is no fixed savings rate per question.
 
 ### Advanced Copilot CLI tactic: CodeAct
 
@@ -99,33 +100,11 @@ The plugin README reports savings on its own benchmark prompts, including MCP-lo
 
 CodeAct reduces the *number* of tool calls. [**RTK (Rust Token Killer)**](https://github.com/rtk-ai/rtk) and [`snip`](https://github.com/edouard-claude/snip) reduce the *size* of each shell tool result. They address different sides of the same problem and can be used together.
 
-These tools intercept `git`, test runners, `grep`, `ls`, and other dev commands and compress their output before it reaches the agent — often 60–90% savings on verbose command output. Unlike CodeAct, this is not about Copilot CLI only; it can help anywhere the shell hook is reliable. Treat Windows and preview hook paths as pilots, not default rollouts. See [MCP & Tool Costs §2.7.7](08-mcp-tool-costs.md#277-compress-tool-output-at-the-source-rtk) and [§2.7.8](08-mcp-tool-costs.md#278-rtk-alternative-snip) for setup.
+These tools filter `git`, test runners, `grep`, `ls`, and other command results before they reach the agent. Reductions depend on the command and output. Unlike CodeAct, this is not Copilot CLI only; it can help where the shell hook is reliable. Treat Windows and preview hook paths as pilots. See [MCP & Tool Costs §2.7.7](08-mcp-tool-costs.md#277-compress-tool-output-at-the-source-rtk) and [§2.7.8](08-mcp-tool-costs.md#278-rtk-alternative-snip) for setup.
 
 ## 2.5.4 Default to Auto Model Selection
 
-Leaving a high-effort model selected applies its rate to every interaction, including simple questions.
-
-**Use Auto by default.** GitHub documents selection from a supported pool based on real-time system health and model performance, with a paid-plan discount compared with selecting the same model manually. Auto does not escalate to every premium model. Select a model manually when the task calls for it:
-
-- Pin to a cheap/fast model when you *know* the task is trivial (autocomplete-style, syntax lookup, one-line edit).
-- Pin to a high-effort model when you *know* the task needs deep reasoning (architecture, security review, novel decomposition).
-- Otherwise, **let Auto choose.** See [Model Selection & Pricing](11-models-and-pricing.md).
-
-### Cache-aware model workflow
-
-Model routing and caching must work together. In long expensive sessions, avoid changing your cost/control surface mid-thread:
-
-- do not switch model unless the task clearly changes
-- do not toggle MCP servers unless the task truly requires different tools
-- do not switch agent/profile mode in the same long thread
-
-Why: those controls live in the high, stable prefix of context. Changing them can invalidate cached prefixes and force reprocessing of large input blocks.
-
-Practical pattern:
-
-1. Pick lane at session start: `{model, agent/profile, MCP set}`.
-2. Keep lane stable while working that thread.
-3. If lane must change, start a fresh chat with a concise handoff summary.
+Use [Model Selection & Pricing](11-models-and-pricing.md#good-default-heuristics) for model and effort choices. Follow [Context Management](04-context-management.md#235-caching-store-and-reuse-context-within-prompts) for cache stability and handoffs.
 
 ## 2.5.5 Retune Prompts to the Target Model
 
@@ -285,24 +264,7 @@ Use `/chronicle` for CLI history and instruction suggestions. Use AI Engineering
 
 ## 2.5.9 Plan First, Then Execute (and Route the Phases)
 
-An agent can spend twenty steps on the wrong approach before starting over. For complex work, agree on a plan before implementation.
-
-**The two-phase pattern:**
-
-![Plan first, execute cheaply: use a strong model for planning, save the plan, then execute in a fresh cheaper lane and verify acceptance criteria.](assets/diagrams/plan-execute-cheaply.svg)
-
-1. **Plan in plan mode (or Ask mode).** Use Copilot CLI's plan mode or VS Code Ask mode to identify files, change order, edge cases, and acceptance criteria. Use a stronger model when the decisions require it.
-2. **Save the plan, then execute it.** Put the agreed plan in a file such as `plan.md` or a tracked issue. Start a **fresh session** with that plan rather than carrying the full planning conversation into every execution turn. See [Caching §2.3.5](04-context-management.md#235-caching-store-and-reuse-context-within-prompts).
-
-**Why this saves tokens:**
-
-- **Less guessing.** A concrete plan reduces requirement discovery and backtracking. Each avoided step saves repeated context (see [Minimizing Agent Steps §4.5.3](10-practical-setup.md#453-minimizing-agent-steps)).
-- **Cheaper execution lane.** Once the hard thinking is done and captured as explicit steps, execution is often mechanical — a cheaper model (Auto or an included model) can carry it out. Reserve the premium model for the planning phase where reasoning quality moves the outcome. See [Model Routing §4.5](10-practical-setup.md#step-5-mix-models-by-task-model-routing).
-- **A clean execution context.** Starting execution from a saved plan, rather than a long plan-then-build mega-session, keeps history short and the prefix cache-friendly — input cost per turn stays low.
-
-Use a strong model for hard planning decisions and a cheaper one for execution when the saved plan makes the task clear.
-
-For the fuller outcome-per-token frame, skill taxonomy, benchmark caveats, and current model routing matrix, see [Outcome per Token](13-outcome-per-token.md).
+For complex work, agree on acceptance criteria before implementation. The full [plan/execute/verify workflow](13-outcome-per-token.md#plan-first-then-execute-cheaply) explains when to separate sessions and use a cheaper execution model.
 
 ## 2.5.10 Layer Tooling on Top of the Copilot Harness
 
@@ -327,13 +289,7 @@ Add third-party tools only for the layer they actually improve:
 
 **Rule:** one tool per layer. Combining CodeAct with RTK or snip can make sense because one reduces turn count and the other reduces output size. Running RTK and snip on the same command path usually does not — it can double-truncate output and make failures harder to inspect.
 
-Use this order when tuning a session:
-
-1. Pick the Copilot lane once: model, mode, active MCP/tool set, and agent/profile.
-2. Disable unused MCP servers and extension-provided tools.
-3. Use skills or focused agent instructions to make tool calls precise.
-4. Add one shell-output filter if command output is still large.
-5. Start a fresh session when changing lanes instead of mutating a long thread.
+Use [Practical Setup](10-practical-setup.md#step-3-choose-mode-model-and-context) to apply these choices. Tool installation lives in [MCP & Tool Costs](08-mcp-tool-costs.md), not in this workflow summary.
 
 ---
 

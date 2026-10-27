@@ -410,29 +410,30 @@
           <section>
             <p class="kicker">Part 2.1</p>
             <h2>Prompt compression</h2>
-            <p>Say the same thing in fewer tokens. Keep technical terms and constraints exact.</p>
-            <img class="diagram diagram-compact" src="../docs/assets/diagrams/prompt-compression-ladder.svg" alt="Prompt compression ladder from verbose to lite to full to ultra while preserving technical substance.">
+            <p>Make the request clear before making it shorter. Keep technical terms and constraints exact.</p>
+            <p class="small">Ordinary concise language is the default. Shorthand is optional.</p>
           </section>
 
           <section>
-            <h2>Caveman pattern</h2>
+            <h2>Optional shorthand</h2>
             <div class="grid">
               <div class="card">
                 <h3>Drop</h3>
-                <p>Articles, filler, pleasantries, hedging, softeners.</p>
+                <p>Redundant wording and pleasantries that add no task information.</p>
               </div>
               <div class="card">
                 <h3>Keep</h3>
-                <p>Technical terms, code, filenames, constraints, exact done condition.</p>
+                <p>Technical terms, code, filenames, negation, conditions, and acceptance checks.</p>
               </div>
             </div>
             <p class="accent"><code>[thing] [action] [reason]. [next step].</code></p>
+            <p class="small">Keep full sentences when fragments hide who does what.</p>
           </section>
 
           <section>
             <h2>Before vs after</h2>
             <table>
-              <thead><tr><th>Verbose</th><th>Caveman</th></tr></thead>
+              <thead><tr><th>Wordy</th><th>Concise</th></tr></thead>
               <tbody>
                 <tr>
                   <td>Could you please review this pull request and let me know if there are any issues?</td>
@@ -440,7 +441,7 @@
                 </tr>
                 <tr>
                   <td>Can you explain what this error message means and how I should fix it?</td>
-                  <td><code>Explain error. How fix.</code></td>
+                  <td><code>Explain this error and how to fix it.</code></td>
                 </tr>
               </tbody>
             </table>
@@ -451,9 +452,9 @@
             <table>
               <thead><tr><th>Level</th><th>Style</th><th>Use when</th></tr></thead>
               <tbody>
-                <tr><td>Lite</td><td>Professional but tight</td><td>Client-facing, onboarding</td></tr>
-                <tr><td>Full</td><td>Fragments, no fluff</td><td>Daily developer prompts</td></tr>
-                <tr><td>Ultra</td><td>Abbrev, arrows, terse</td><td>High-volume, known domain</td></tr>
+                <tr><td>Concise prose</td><td>Plain, complete wording</td><td>Default</td></tr>
+                <tr><td>Fragments</td><td>Shared terms, short clauses</td><td>Actors and conditions stay clear</td></tr>
+                <tr><td>Dense shorthand</td><td>Abbreviations, arrows</td><td>Only if readers can decode it reliably</td></tr>
               </tbody>
             </table>
           </section>
@@ -588,12 +589,9 @@ Done: targeted test passes.</code></pre>
           </section>
 
           <section>
-            <h2>Instruction compression example</h2>
-            <pre><code class="language-text">Terse like caveman. Technical substance exact. Only fluff die.
-Drop: articles, filler (just/really/basically), pleasantries, hedging.
-Fragments OK. Short synonyms. Code unchanged.
-Pattern: [thing] [action] [reason]. [next step].</code></pre>
-            <p class="small">Around 50 tokens. Loaded on every interaction.</p>
+            <h2>Prune before compressing</h2>
+            <p>Delete duplicate rules, stale notes, and facts visible in code. Keep project-specific pitfalls.</p>
+            <p class="small">The reusable response template lives in Practical Setup. No token-count estimate is needed to decide whether a rule is relevant.</p>
           </section>
 
           <section>
@@ -668,7 +666,7 @@ API conventions:
           </section>
 
           <section>
-            <h2>Default line</h2>
+            <h2>Task-specific code output</h2>
             <pre><code class="language-text">Code only, no explanation.</code></pre>
             <p>Best for generation tasks when team already understands desired change.</p>
           </section>
@@ -689,10 +687,8 @@ API conventions:
 
           <section>
             <h2>Project default</h2>
-            <pre><code class="language-text">Be concise. No explanations unless asked.
-Code only for generation tasks.
-Bullets over paragraphs.</code></pre>
-            <p class="small">Override when learning, debugging, or teaching: ask for explanation explicitly.</p>
+            <p>Lead with the answer. Keep explanations proportional to the task, with verification evidence and blockers intact.</p>
+            <p class="small">Use the single <a href="../10-practical-setup/#step-1-set-a-concise-response-default">starter template</a>, then add relevant project rules.</p>
           </section>
 
           <section>
@@ -703,7 +699,7 @@ Bullets over paragraphs.</code></pre>
 
 B: Add input validation to processOrder().
 Code only. No explanation. Minimal diff.</code></pre>
-              <p><strong>Measure:</strong> response length, explanation tokens, diff usefulness.</p>
+              <p><strong>Measure:</strong> acceptance checks, full token usage, billed cost, time, and retries, not only response length.</p>
               <p><strong>Time:</strong> 15 minutes.</p>
             </div>
           </section>
@@ -892,7 +888,7 @@ Root cause fixed -> delete that line.</code></pre>
 System/Tools: MCPs + instructions + system prompt
 Messages: conversation history
 Free Space: remaining context</code></pre>
-            <p class="small">In VS Code, estimate active MCP servers x tools x about 200 tokens/tool.</p>
+            <p class="small">Inspect loaded tools. Installed server counts alone do not capture deferred definitions or cache behavior.</p>
           </section>
 
           <section>
@@ -916,6 +912,7 @@ x 200 tokens/tool
 = 10,000 tokens per step
 
 15 agent steps = 150,000 schema tokens</code></pre>
+            <p class="small">Hypothetical full-catalog loading, not measured billing. Deferred definitions and caching change the result.</p>
           </section>
 
           <section>
@@ -992,39 +989,41 @@ x 200 tokens/tool
           <section>
             <p class="kicker">Part 3</p>
             <h2>Comparisons and data</h2>
-            <p>Compare expected savings with effort and risk.</p>
+            <p>Compare measured effects with their baseline, workload, and limits.</p>
           </section>
 
           <section>
             <h2>Same task, different cost</h2>
             <table>
-              <thead><tr><th>Technique</th><th>Prompt</th><th>Tokens</th></tr></thead>
+              <thead><tr><th>Study</th><th>Control</th><th>Result</th></tr></thead>
               <tbody>
-                <tr><td>Verbose</td><td>Please add comprehensive error handling...</td><td>~40</td></tr>
-                <tr><td>Caveman lite</td><td>Add error handling. Cover null, types, network.</td><td>~16</td></tr>
-                <tr><td>Caveman full</td><td>Error handling. Cover: null, bad type, net error.</td><td>~12</td></tr>
-                <tr><td>Ultra</td><td>Error handling: null/bad-type/net-err.</td><td>~7</td></tr>
+                <tr><td>Upstream</td><td>Answer concisely.</td><td>3% median output reduction; 10 prompts, one run</td></tr>
+                <tr><td>JetBrains</td><td>Stock Claude Code</td><td>8.5% fewer output tokens; 82 paired tasks</td></tr>
+                <tr><td>JetBrains total cost</td><td>Same full run</td><td>11.6% higher; long-context outlier</td></tr>
               </tbody>
             </table>
+            <p class="small">Different controls, not universal savings. <a href="../05-output-control/#caveman-optional-output-style">Sources, versions, and quality limits</a>.</p>
           </section>
 
           <section>
             <h2>Big winners</h2>
             <ol>
-              <li>Caveman-speak + precise prompts.</li>
-              <li>Code-only / constrained output.</li>
-              <li>Shrink always-on context.</li>
-              <li>Ask Mode for simple questions.</li>
-              <li>Audit MCP servers.</li>
-              <li>Retune prompts after model changes.</li>
+              <li>Identify the dominant cost bucket.</li>
+              <li>Remove irrelevant context and tool definitions.</li>
+              <li>Request the response format the task needs.</li>
+              <li>Avoid unnecessary agent loops and retries.</li>
+              <li>Test changes on accepted outcomes and total cost.</li>
             </ol>
           </section>
 
           <section>
-            <h2>Quality curve</h2>
-            <pre><code class="language-text">Savings:  lite ---- full ---- ultra ---- extreme
-Risk:     low  ---- low  ---- medium --- high</code></pre>
-            <p class="accent">Use full caveman for technical prompts only while the meaning stays clear.</p>
+            <h2>Test cost and correctness</h2>
+            <ol>
+              <li>Default: no extra style instruction.</li>
+              <li>Concise: <code>Answer concisely.</code></li>
+              <li>Caveman: same concise instruction plus a pinned skill.</li>
+            </ol>
+            <p class="small">Repeat paired tasks. Track acceptance checks, token buckets, cost, time, and retries. This guide has not run its own paid benchmark.</p>
           </section>
 
           <section>
@@ -1049,8 +1048,8 @@ Risk:     low  ---- low  ---- medium --- high</code></pre>
           <section>
             <h2>Repo setup steps</h2>
             <ol>
-              <li>Create compressed <code>.github/copilot-instructions.md</code>.</li>
-              <li>Add compressed project-specific rules.</li>
+              <li>Set concise, readable response preferences.</li>
+              <li>Add only relevant project-specific rules.</li>
               <li>Split path-specific guidance with <code>applyTo</code>.</li>
               <li>Use Auto by default; pin only with reason.</li>
               <li>Add <code>copilot-setup-steps.yml</code> for Coding Agent.</li>
@@ -1059,11 +1058,12 @@ Risk:     low  ---- low  ---- medium --- high</code></pre>
 
           <section>
             <h2>Starter instruction template</h2>
-            <pre><code class="language-text">Terse like caveman. Technical substance exact. Only fluff die.
-Drop: articles, filler, pleasantries, hedging.
-Fragments OK. Short synonyms. Code unchanged.
-Code only for generation tasks. No explanation unless asked.
-Minimize tool calls. Batch related reads/edits.</code></pre>
+            <pre><code class="language-text">Lead with the answer. Keep explanations proportional to the task.
+Skip greetings, repeated summaries, and unsolicited follow-up offers.
+Preserve technical terms, negation, conditions, numbers, units, code, and commands.
+Use full sentences when brevity would make an action ambiguous.
+For code changes, report what changed and the relevant test result or blocker.</code></pre>
+            <p class="small">Canonical template: <a href="../10-practical-setup/#step-1-set-a-concise-response-default">Practical Setup</a>.</p>
           </section>
 
           <section>
@@ -1091,10 +1091,10 @@ Done: targeted test passes.</code></pre>
             <table>
               <thead><tr><th>Week</th><th>Habit</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Compressed instructions + Ask Mode for questions</td></tr>
-                <tr><td>2</td><td>Caveman-lite prompts</td></tr>
-                <tr><td>3</td><td>Caveman-full + structured formats</td></tr>
-                <tr><td>4</td><td>Code-only defaults + reusable snippets outside always-on context</td></tr>
+                <tr><td>1</td><td>Record a baseline; prune irrelevant instructions</td></tr>
+                <tr><td>2</td><td>Use concise requests and task-specific response formats</td></tr>
+                <tr><td>3</td><td>Audit loaded tools, command output, and context</td></tr>
+                <tr><td>4</td><td>Compare accepted outcomes, total cost, time, and retries</td></tr>
               </tbody>
             </table>
           </section>
@@ -1160,7 +1160,7 @@ repo instructions</code></pre>
             <ul>
               <li>Chooses from supported Auto pool.</li>
               <li>Subject to plan and org policy.</li>
-              <li>Based on health and performance.</li>
+              <li>Task-optimized routing considers complexity, health, and availability where supported.</li>
               <li>Discounted on eligible paid-plan Chat usage.</li>
               <li>Does not automatically escalate to every premium model.</li>
             </ul>
@@ -1183,7 +1183,7 @@ repo instructions</code></pre>
             <h2>Anti-patterns</h2>
             <ul>
               <li>Leaving premium model pinned all day.</li>
-              <li>Assuming Auto jumps to premium when task gets hard.</li>
+              <li>Assuming Auto bypasses model-access policy.</li>
               <li>Equating vendor API pricing with Copilot billing.</li>
               <li>Enabling every premium model for whole org first.</li>
               <li>Ignoring plan/model availability.</li>
@@ -1434,7 +1434,7 @@ repo instructions</code></pre>
               <div class="card checkpoint">
                 <h3>Developer</h3>
                 <ul>
-                  <li>Code-only default</li>
+                  <li>Concise, task-appropriate output</li>
                   <li>Ask/Edit/Agent routing</li>
                   <li>Concise prompts</li>
                   <li>Plan first, fresh sessions</li>
@@ -1628,18 +1628,18 @@ repo instructions</code></pre>
           <p><strong>Timing:</strong> 2 min.</p>
           <p>Set rule: compression is not dumbing down. Technical substance stays exact. Only fluff dies.</p>
         `,
-        "Caveman pattern": `
+        "Optional shorthand": `
           <p><strong>Timing:</strong> 5 min.</p>
-          <p>Read pattern aloud. Show that files, functions, constraints, and done conditions matter more than grammar.</p>
-          <p>Warn: do not abbreviate unknown project terms without defining them.</p>
+          <p>Read the pattern as an optional request style, not evidence about the response skill. Keep actors, negation, and conditions explicit.</p>
+          <p>Do not abbreviate unfamiliar project terms. Plain concise prose is the starting point.</p>
         `,
         "Before vs after": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Ask audience which version they would rather receive as a task. Most pick caveman because action is clearer.</p>
+          <p>Compare the requirements each version preserves. Preference alone does not establish token savings or correctness.</p>
         `,
         "Compression levels": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Recommend full as default for internal development. Lite for customer-facing/onboarding. Ultra only when domain is shared and ambiguity is low.</p>
+          <p>Start with concise prose. Fragments are optional when shared context keeps meaning explicit. No quality guarantee applies to a compression level.</p>
         `,
         "Structured beats prose": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1691,9 +1691,9 @@ repo instructions</code></pre>
           <p>Clarify different file conventions can coexist. Cost issue is shared: always-on text becomes repeated baseline.</p>
           <p>Deduplicate if same guidance appears in multiple always-on files.</p>
         `,
-        "Instruction compression example": `
+        "Prune before compressing": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Use this as concrete target. A good instruction file is closer to config than a wiki.</p>
+          <p>Ask what each rule contributes to the task. Remove duplicates and stale content before shortening sentences.</p>
         `,
         "Context hygiene": `
           <p><strong>Timing:</strong> 5 min.</p>
@@ -1723,9 +1723,9 @@ repo instructions</code></pre>
         `,
         "Output control": `
           <p><strong>Timing:</strong> 2 min.</p>
-          <p>Position as highest ROI because it is easy and applies every time. It also improves signal for humans.</p>
+          <p>Separate final narration from code, tool calls, and reasoning. A shorter visible response does not establish lower whole-task cost.</p>
         `,
-        "Default line": `
+        "Task-specific code output": `
           <p><strong>Timing:</strong> 3 min.</p>
           <p>Say: use for implementation, not learning. If explanation is needed, ask explicitly and accept cost.</p>
         `,
@@ -1735,7 +1735,7 @@ repo instructions</code></pre>
         `,
         "Project default": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Recommend putting this in repo instructions for IDE workflows. Org instructions alone may not cover all surfaces.</p>
+          <p>Use the canonical starter template rather than a second variant. Preserve explanations when the task needs them.</p>
         `,
         "Lab 6: output A/B": `
           <p><strong>Timing:</strong> 15 min.</p>
@@ -1812,7 +1812,7 @@ repo instructions</code></pre>
         `,
         "Measure first": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>In CLI, /context gives concrete breakdown. In VS Code, approximate via server/tool count until equivalent telemetry exists.</p>
+          <p>In CLI, /context gives a concrete breakdown. In other hosts, inspect loaded definitions rather than treating all installed servers as fully loaded.</p>
         `,
         "Every tool costs tokens": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1820,7 +1820,7 @@ repo instructions</code></pre>
         `,
         "Multiplication problem": `
           <p><strong>Timing:</strong> 5 min.</p>
-          <p>Pause on math. Per-step overhead multiplied by agent steps becomes six figures quickly.</p>
+          <p>This illustrates full-catalog replay. Do not present it as a measured run or ignore caching and deferred discovery.</p>
         `,
         "Audit rule": `
           <p><strong>Timing:</strong> 5 min.</p>
@@ -1850,15 +1850,15 @@ repo instructions</code></pre>
         `,
         "Same task, different cost": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Quality stays acceptable across versions until ultra becomes ambiguous. This supports full-caveman sweet spot.</p>
+          <p>Keep baselines separate. Output-only changes do not establish total-cost savings. Direct readers to the evidence chapter for scope and quality limits.</p>
         `,
         "Big winners": `
           <p><strong>Timing:</strong> 4 min.</p>
           <p>Have audience compare this list against their baseline from Lab 0. Pick top two for immediate adoption.</p>
         `,
-        "Quality curve": `
+        "Test cost and correctness": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Compression is not linear. First cuts are free; extreme compression increases rework risk.</p>
+          <p>Compare Caveman with plain concision separately from concision with default output. Include failures, rule overhead, and outliers. The slide describes a protocol, not results from this guide.</p>
         `,
         "Lab 12: prioritize techniques": `
           <p><strong>Timing:</strong> 25 min.</p>
@@ -1906,7 +1906,7 @@ repo instructions</code></pre>
         `,
         "Auto: practical meaning": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Auto is cheap default lane, not magic premium escalation. Customers must enable/pin premium intentionally.</p>
+          <p>Auto can route by task complexity where supported, but remains subject to plan and model-access policy. Check the current pool rather than promising every premium model.</p>
         `,
         "Reasoning effort": `
           <p><strong>Timing:</strong> 5 min.</p>

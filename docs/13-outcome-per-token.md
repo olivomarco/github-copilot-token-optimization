@@ -265,53 +265,7 @@ Why fresh session matters:
 
 This is the expanded version of [Plan First, Then Execute §2.5.9](06-workflow-optimization.md#259-plan-first-then-execute-and-route-the-phases).
 
-### Official Three-Tier Framework
-
-GitHub's official tutorial separates work into three model lanes.[^optimize-ai]
-
-| Tier | Best for | Outcome-per-token rule |
-|---|---|---|
-| Reasoning models | Architecture decisions, complex debugging, system design, deep analysis | Use for planning and hard judgment |
-| Mid-tier models | Clear plans that need efficient implementation | Use for execution once ambiguity is removed |
-| Lighter models | Refactoring, formatting, documentation, routine scoped changes | Use for bounded mechanical work |
-
-Use a cheaper execution model when the saved plan removes the need for further difficult reasoning.
-
-## Day-to-Day Model Guidance
-
-Model advice changes quickly. Treat this table as routing guidance, not permanent truth. Check the official [supported models](https://docs.github.com/en/copilot/reference/ai-models/supported-models), [model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison), and [models and pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) pages before publishing customer-specific guidance.[^supported-models][^models-pricing]
-
-| Work | Good default | Tier | Typical input cost / 1M tokens | Why |
-|---|---|---|---:|---|
-| Quick lookup, syntax, tiny bounded edit | Auto, GPT-5.6 Luna, MAI-Code-1-Flash, Claude Haiku 4.5 | Lightweight | $0.75-$1.00 | Fast and low-cost enough for small tasks |
-| Normal implementation after a clear plan | Auto, GPT-5.6 Terra, MAI-Code-1-Flash, Claude Sonnet 5 | Versatile / Lightweight | $0.75-$2.50 | Balanced execution without paying maximum reasoning cost |
-| Agentic coding with moderate uncertainty | GPT-5.6 Terra, GPT-5.4 nano, Claude Sonnet 5 | Versatile / Lightweight | $0.20-$2.50 | Good lane when edits need tools but not frontier reasoning |
-| Hard architecture, multi-file debugging, long-horizon planning | GPT-5.6 Sol, GPT-5.5, Claude Opus 4.7/4.8, Claude Fable 5 | Powerful | $5.00-$10.00 | Pay premium where reasoning quality changes the outcome |
-| Open-weight / cost-conscious coding | Kimi K2.7 Code | Versatile | $0.95 | Useful option, but review enterprise policy and security requirements |
-| Visual, multimodal, research-heavy work | Gemini 3.1 Pro (Public Preview), Claude Sonnet 5, GPT-5 mini where supported | Powerful / Versatile | $0.25-$2.00 | Pick for modality and research fit, not raw benchmark rank |
-| Subagents for focused subtasks | Cheaper/lightweight model | Lightweight | varies | Subagents do not inherit the whole main conversation, so cheaper models often suffice |
-
-### Practical Defaults
-
-For most teams:
-
-1. **Auto first** for unknown everyday work. GitHub documents Auto as a task-aware router and gives paid plans a 10% AI credit discount when using it in supported surfaces.[^auto]
-2. **Luna / MAI / Haiku** for tiny, bounded work.
-3. **Terra / Sonnet / mid-tier** for normal implementation.
-4. **Sol / GPT-5.5 / Opus / Fable** for planning, architecture, and hard debugging.
-5. **Fresh session when changing lanes.** Switching models mid-session can invalidate cache and drag accumulated context into a more expensive request.[^optimize-ai]
-
-### Important Model Caveats
-
-- GPT-5.6 Sol is the powerful lane; do not leave it pinned for routine edits.
-- Kimi K2.7 is an open-weight model in Copilot and may require admin opt-in for Business/Enterprise. Treat it as a policy decision, not just a price decision.[^kimi]
-- MAI-Code-1-Flash is documented as a continuously improving model; behavior may evolve as checkpoints change.[^mai]
-- Claude Sonnet 5 promotional pricing was documented through August 31, 2026. Recheck after that date before publishing pricing guidance.[^supported-models]
-- Claude Fable 5 has a data-retention caveat in GitHub docs: Anthropic retains prompts and outputs to operate safety classifiers. Business/Enterprise admins should review terms before enabling it.[^supported-models]
-- FedRAMP and EU DR (Data Residency) enforcement add a 10% AI credit surcharge, and available models can differ by region and compliance boundary.[^fedramp-eu-dr]
-- Legacy annual subscribers may not receive access to new models and features such as GPT-5.6 family, Claude Fable 5, Claude Sonnet 5, or Kimi K2.7 under old billing.[^models-pricing]
-- Extended capabilities such as 1M context and configurable reasoning are documented for VS Code and Copilot CLI only. Use regular context and regular reasoning by default.[^supported-models]
-- Code completions and next edit suggestions are not billed in AI credits on paid plans. Do not treat every Copilot surface as the same cost bucket.[^usage-billing]
+Use [Model Selection & Pricing](11-models-and-pricing.md) to choose planning and execution models, set effort, and check pricing and policy restrictions.
 
 ## Benchmarks: Useful, Not Decisive
 
@@ -412,20 +366,6 @@ Before starting an expensive agent session:
 [^cloud-agent]: GitHub Docs, ["About Copilot cloud agent"](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent).
 
 [^optimize-ai]: GitHub Docs, ["Optimize AI Usage"](https://docs.github.com/en/copilot/tutorials/optimize-ai-usage).
-
-[^supported-models]: GitHub Docs, ["Supported AI models in Copilot"](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and ["Model comparison"](https://docs.github.com/en/copilot/reference/ai-models/model-comparison).
-
-[^models-pricing]: GitHub Docs, ["Models and Pricing"](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing).
-
-[^auto]: GitHub Docs, ["Auto model selection"](https://docs.github.com/en/copilot/concepts/models/auto-model-selection).
-
-[^kimi]: GitHub Changelog, ["Kimi K2.7 now available for Copilot Business and Enterprise"](https://github.blog/changelog/2026-07-07-kimi-k2-7-now-available-for-copilot-business-and-enterprise/).
-
-[^mai]: GitHub Changelog, ["MAI-Code-1-Flash is now available for GitHub Copilot"](https://github.blog/changelog/2026-06-02-mai-code-1-flash-is-now-available-for-github-copilot/).
-
-[^fedramp-eu-dr]: GitHub Docs, ["FedRAMP models"](https://docs.github.com/en/copilot/concepts/models/fedramp-models) and ["GitHub Copilot with data residency"](https://docs.github.com/en/enterprise-cloud@latest/admin/data-residency/github-copilot-with-data-residency).
-
-[^usage-billing]: GitHub Docs, ["Usage-based billing for individuals"](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-individuals).
 
 [^swebench]: [SWE-bench Verified](https://www.swebench.com/verified.html).
 

@@ -74,10 +74,10 @@
         </section>
 
         <section>
-          <h2>1. Default to constrained output</h2>
-          <div class="quote">Code only. No explanation unless asked.</div>
-          <p>Ask for a specific format in code tasks, reviews, and summaries. Cut explanations you do not need.</p>
-          <p class="small muted">Do not compress reasoning or evidence when the task needs it.</p>
+          <h2>1. Start with concise output</h2>
+          <div class="quote">Answer concisely. Keep the evidence needed to act.</div>
+          <p>Choose formats per task. Caveman is optional, not a guaranteed cost reduction.</p>
+          <p class="small muted">Compare default, concise, and Caveman on total cost and correctness. <a href="../05-output-control/#caveman-optional-output-style">Evidence and protocol</a>.</p>
         </section>
 
         <section>
@@ -124,7 +124,7 @@
             <li><strong>Strong reasoning</strong> for planning, architecture, and hard debugging.</li>
             <li><strong>Cheaper execution model</strong> once the plan captures the hard decisions.</li>
           </ul>
-          <p>Choose reasoning effort before the long session. Do not raise it mid-thread.</p>
+          <p>Choose effort before long work. If the task changes, reassess with a concise handoff.</p>
         </section>
 
         <section>
@@ -136,7 +136,7 @@
         <section>
           <h2>8. Keep the MCP baseline small</h2>
           <ul>
-            <li>Every enabled MCP tool schema is repeated in agent context.</li>
+            <li>Loaded tool definitions add context; hosts may defer unused schemas.</li>
             <li>Disable servers and extensions not needed for this repo or task.</li>
             <li>Use a clean profile or focused agent for repeat workflows.</li>
             <li>Run <code>/context</code> in Copilot CLI to see what is loaded.</li>
@@ -194,7 +194,7 @@ graphify path "Router" "Database"</code></pre>
             <div class="card"><h3>Week 4</h3><p>Plan-first workflows, cache stability, and usage review.</p></div>
           </div>
           <p class="small">Every task: constrain output, target context, choose the harness, plan, and verify.</p>
-          <p class="small"><a href="../README.md">Read the guide</a> · <a href="index.html">Open the full workshop</a></p>
+          <p class="small"><a href="../">Read the guide</a> · <a href="index.html">Open the full workshop</a></p>
         </section>
       </div>
     </div>
