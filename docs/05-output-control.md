@@ -2,13 +2,13 @@
 
 [← Back to Guide](index.md)
 
-> **Why this section matters most for cost.** Output tokens cost **5× more per token** than input tokens across all Anthropic/Copilot UBB pricing tiers. Even though responses are typically smaller in volume than total input (which includes file context, history, and tool schemas), the pricing asymmetry makes output control the highest per-token ROI action in this guide. One line in `copilot-instructions.md` — "Code only, no explanation" — cuts output cost by 40–70% on every code task, permanently.
+Output can cost more per token than input. The Anthropic examples in [Model Selection & Pricing](11-models-and-pricing.md) have a **5× output rate**; do not treat vendor API rates as Copilot billing rates. Asking for code without unwanted explanation is a low-effort way to cut output. The guide estimates **40–70% fewer output tokens** for code-generation tasks.
 
 ---
 
 ## 2.4.1 Request Code-Only Responses
 
-LLMs love to explain. A simple code generation request can return 50 lines of code wrapped in 200 tokens of explanation you didn't ask for.
+A request for code can return 50 lines of code plus 200 tokens of explanation. If you only need the implementation, say so.
 
 **Add to your prompt or `copilot-instructions.md`:**
 
@@ -24,7 +24,7 @@ Add input validation to processOrder(). Code only.
 
 **Savings: 40-70% output tokens** for code generation tasks.
 
-**Trade-off:** If you're learning or debugging, you want the explanation. Use "code only" when you know what you're doing and just need the implementation.
+**Trade-off:** Keep explanations when learning or debugging. Use "code only" when you understand the task and need the implementation.
 
 ## 2.4.2 Constrain Response Format
 
@@ -48,7 +48,7 @@ Code only for generation tasks.
 Bullets over paragraphs.
 ```
 
-This applies to every interaction automatically. You don't have to remember to type "code only" each time.
+The project default saves you from repeating "code only" in each prompt.
 
 **Savings: 30-60% output tokens on every interaction.**
 

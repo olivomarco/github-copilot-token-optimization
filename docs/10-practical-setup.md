@@ -26,7 +26,7 @@ ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
 Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 ```
 
-This is ~50 tokens. A natural-English equivalent would be 120+ tokens. You save 70+ tokens on every single interaction.
+The template is about 50 tokens, compared with 120+ for a full-sentence equivalent: 70+ fewer tokens per interaction.
 
 ### Step 2: Add Project-Specific Instructions (Compressed)
 
@@ -55,7 +55,7 @@ For error handling, we use the Result<T,E> pattern. Don't throw exceptions in
 business logic code.
 ```
 
-Both convey identical information. The compressed version is ~40 tokens. The verbose version is ~110 tokens. **64% savings, applied to every interaction.**
+Both versions contain the same project rules. The estimates are ~40 tokens for the compressed version and ~110 for the verbose version: **64% fewer tokens per load**.
 
 ### Step 3: Choose Your Default Mode
 
@@ -82,9 +82,9 @@ GitHub Copilot pricing depends on model choice and billing mode. Pick the model 
 | High-effort (Claude Opus, o-series reasoning) | Highest | Architecture, deep reasoning, novel problem decomposition |
 | **Auto** | Low by default | Default: Copilot chooses from the supported Auto pool and applies the paid-plan discount where eligible |
 
-**Default to Auto.** Auto is the best general-purpose baseline because it reduces picker fatigue and, on eligible paid-plan usage, applies the discount documented by GitHub. Treat Auto as the default lane, not as automatic escalation to every high-effort model. If you need a premium high-effort model, pin it manually. See [Model Selection & Pricing](11-models-and-pricing.md).
+**Default to Auto** for general work. It selects from the supported pool and applies GitHub's discount on eligible paid-plan usage. It does not escalate to every high-effort model; select a premium model manually when needed. See [Model Selection & Pricing](11-models-and-pricing.md).
 
-**Never burn a high-effort model on a "what's the syntax for X" question** — you pay the higher token rate for an answer the cheapest model would have given you correctly.
+Use a lower-cost model for syntax questions that do not need deep reasoning.
 
 ### Cache-protection rule for long sessions
 
@@ -104,7 +104,7 @@ If a switch is required, do this instead:
 
 ### Step 5: Mix Models by Task (Model Routing)
 
-One useful cost lever: **use different models for different subtasks** within the same workflow. The detailed pricing context, historical multiplier references, plan availability, and official GitHub Docs links now live in [Model Selection & Pricing](11-models-and-pricing.md). Keep this section focused on the practical routing habit.
+**Match models to subtasks** within a workflow. For billing units, historical multipliers, plan availability, and official sources, see [Model Selection & Pricing](11-models-and-pricing.md).
 
 #### The Model Mixing Strategy
 
@@ -136,17 +136,17 @@ If you were using Opus for everything: 30 × 3x = 90 cost units. Mixing drops th
 
 Copilot's **Auto** mode chooses from the supported Auto-selection pool based on real-time system health and model performance. On paid plans, GitHub documents a **10% discount** for eligible Auto usage in Copilot Chat. Treat Auto as the default low-friction lane; higher-cost premium models still need to be pinned manually.
 
-**Default to Auto. Override only when needed.** This is a high-leverage default for teams because it keeps the day-to-day default in the lower-cost lane. Use Auto unless you have a specific reason to pin a model — for example, you *know* the task is trivial (force the cheapest tier) or you *know* it needs deep reasoning (pin to a premium model manually). For the exact tradeoffs, see [Model Selection & Pricing](11-models-and-pricing.md).
+Override Auto when you have a specific reason: choose the cheapest tier for a trivial task or a premium model for difficult reasoning. See [Model Selection & Pricing](11-models-and-pricing.md) for tradeoffs.
 
 #### The Anti-Pattern: High-Effort Models for Everything
 
-A costly habit: defaulting to Opus or another high-effort model for every interaction. People do this because "better model = better results." For most day-to-day coding tasks, the extra model cost is hard to justify.
+Do not assume the most capable model is worth its rate on every task.
 
 Reserve high-effort models for their actual strengths: novel reasoning, architectural judgment, and tasks where a 1-2% quality difference justifies a 3-5x cost increase.
 
 #### Reasoning Effort: Another Lever
 
-Beyond model selection, a second cost dial exists on reasoning-capable models: **thinking effort** (or **reasoning effort**). This controls how many tokens the model spends thinking before responding — affecting text, tool calls, and extended thinking all at once.
+On supported reasoning models, **thinking effort** or **reasoning effort** controls how much work the model does. It affects response text, tool calls, and extended thinking.
 
 | Effort Level | Behavior | Anthropic's Recommended Use |
 |:------------:|----------|----------------------------|
@@ -165,11 +165,11 @@ Key facts from Anthropic's documentation:
 - **Works without extended thinking enabled.** You don't need to turn on a separate visible thinking mode to benefit — effort controls total token spend regardless.
 - **No published benchmarks.** Anthropic provides qualitative guidance (the table above) but has not published specific numbers on quality-vs-effort tradeoffs. This is vendor-recommended, not independently benchmarked.
 
-**Copilot does expose this on many reasoning-capable models.** In VS Code, select a reasoning model in the model picker, open its thinking-effort submenu, and choose the level. This applies to reasoning-oriented model families, including Claude Sonnet/Opus reasoning models and GPT reasoning models when the selected model supports it; non-reasoning models such as GPT-4.1 and GPT-4o do not show the submenu. In Copilot CLI, some models also allow a `reasoning_effort` setting in config, with GitHub's docs showing `gpt-5.3-codex` as an example. The same lever is available directly in the Claude API and related tools. The combination of Sonnet at `medium` effort vs. Opus at `high` effort could still represent a 3-5x+ total cost difference for equivalent coding tasks.
+In VS Code, select a supported reasoning model and choose a level from its thinking-effort submenu. Non-reasoning models such as GPT-4.1 and GPT-4o do not show it. Some Copilot CLI models accept `reasoning_effort` in config; GitHub's example uses `gpt-5.3-codex`. The Claude API exposes effort too. Sonnet at `medium` versus Opus at `high` could represent a 3-5x+ cost difference, but the quality tradeoff needs measurement.
 
 ### Step 6: Retune Instructions for the Model You Actually Use
 
-When you change models, do not assume the old prompt stack is still optimal. Provider prompting guides are version-specific and frequently explain behavior changes: verbosity, tool eagerness, structure preferences, reasoning effort, and stop conditions.
+When changing models, check the provider's version-specific guide for changes to verbosity, tool use, structure, reasoning effort, and stopping behavior.
 
 Fast workflow:
 
@@ -195,9 +195,7 @@ See [Workflow Optimization §2.5.5](06-workflow-optimization.md#255-retune-promp
 
 Do not try to solve governance with prompt text alone. Prompt files shape behavior. Billing controls live elsewhere.
 
-If you are guiding an organization or enterprise rollout, stop here and read [Enterprise Governance](12-enterprise-governance.md). That chapter owns the admin guidance: AI-credit budgets, per-user tightening, model-access policy, org instructions, and separate-organization tradeoffs.
-
-Use this page for practitioner setup. Use the enterprise chapter for customer governance decisions.
+For an organization or enterprise rollout, use [Enterprise Governance](12-enterprise-governance.md). It covers AI-credit budgets, per-user limits, model-access policy, org instructions, and separate-organization tradeoffs.
 
 ### Step 8: Convert Non-Text Inputs Before AI Work
 
@@ -226,7 +224,7 @@ Then send the `.md` file to the model, chunk/index the `.md` file for retrieval,
 
 ## 4.2 Keep Reusable Guidance Outside Always-On Context
 
-This repo no longer ships installable workflow packs. Keep the same habit, though: put occasional workflow guidance outside the always-on prompt and pull it in only when the task needs it.
+Store occasional workflow guidance outside the always-on prompt. Load it when the task needs it.
 
 Good candidates:
 
@@ -235,11 +233,11 @@ Good candidates:
 - debugging playbooks
 - migration notes for one subsystem
 
-Store them wherever your team already keeps reusable prompts or operating notes. The token rule stays the same: if a rule is not needed on most interactions, do not keep paying for it on every interaction.
+Use your team's existing home for reusable prompts or operating notes. Rules needed only occasionally should not add context to every interaction.
 
 ### Optional for CLI-heavy users: CodeAct
 
-If most of your long-running work happens in **Copilot CLI**, optional external plugin [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin) is worth evaluating. It is not part of this repo and not a general Copilot Chat feature. The value proposition is workflow shape: collapse many `grep` / `view` / `bash` / MCP hops into one sandboxed execution so the full context and tool catalog replay fewer times. Use it for CLI-heavy sessions; skip it if your work is mostly IDE chat/edit or if you do not want an external plugin in the path.
+For long **Copilot CLI** tool chains, consider the external [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin). It combines `grep` / `view` / `bash` / MCP operations in one sandboxed execution, reducing repeated context and catalog input. It is not part of this repo or a general Copilot Chat feature. Skip it for mostly IDE chat/edit work or if external plugins do not fit your workflow.
 
 ### MCPs vs. Skills: Eager vs. Lazy Context Loading
 
@@ -285,7 +283,7 @@ Without this, the agent discovers and installs dependencies through trial and er
 
 ### 4.3.3 Write Precise Issue Descriptions
 
-Vague issues cause the agent to explore the codebase extensively (reading many files = many tokens) and potentially misunderstand requirements (rework = more tokens).
+Name the failure, location, expected fix, and test. Vague issues leave the agent to discover requirements as well as code.
 
 **Vague issue:**
 
@@ -319,7 +317,7 @@ Mock: external services only. No impl mocking.
 Coverage: branch coverage ≥80%.
 ```
 
-Focused agents carry less instruction overhead than a general-purpose instruction set. They also give you a stable control surface: the same task profile can declare the tools it is allowed to use, the instructions it carries, and, where your Copilot surface supports it, the model it should use. For repeat coding workflows, prefer a focused custom agent over the default agent when you care about predictable cost. The default agent inherits more of the current environment: active tools, extension-provided surfaces, and whatever model is currently selected.
+A focused agent can declare a narrow tool list, task instructions, and, where supported, a model. Use one for repeat workflows that need consistent settings. The default agent inherits more of the current environment, including active tools, extensions, and the selected model.
 
 Keep the tool list narrow. This repo's `agents/token-saver.agent.md` is the pattern: built-in `bash`, `edit`, and `view`; no duplicate filesystem MCP; terse output rules; explicit tool minimization.
 
@@ -327,7 +325,7 @@ Keep the tool list narrow. This repo's `agents/token-saver.agent.md` is the patt
 
 The Coding Agent runs many shell commands per session — `git diff`, test runs, `grep`, `ls`. Each command's raw output flows back as input tokens on the next agent step. A large failing test suite or verbose git diff can return tens of thousands of tokens.
 
-[**RTK (Rust Token Killer)**](https://github.com/rtk-ai/rtk) is a CLI proxy that filters those outputs before they reach the agent. It runs the original command, removes noise (passing tests, unchanged diff lines, build artifacts), and returns a compressed result. The agent behavior is unchanged; it sees smaller, signal-focused output.
+[**RTK (Rust Token Killer)**](https://github.com/rtk-ai/rtk) runs the original command and filters its output before the agent sees it. Filters remove items such as passing test lines, unchanged diff context, and build noise.
 
 **Setup for VS Code Copilot — per-repo:**
 
@@ -349,7 +347,7 @@ Combine with `copilot-setup-steps.yml` (§4.3.2) and precise issue descriptions 
 
 ### 4.3.7 Compress Shell Command Output with snip
 
-[`snip`](https://github.com/edouard-claude/snip) is the closest practical alternative to RTK for Copilot-oriented shell-output compression. It runs commands normally, filters the output through declarative YAML pipelines, and can track local savings with `snip gain`.
+[`snip`](https://github.com/edouard-claude/snip) is another shell-output filter for Copilot workflows. It uses YAML pipelines and tracks local savings with `snip gain`.
 
 Install:
 
@@ -422,7 +420,7 @@ Note: code parsing is local for the AST pass. Optional semantic/deep extraction 
 
 ### 4.3.9 Use a Session Harness Checklist
 
-A "harness" is not a separate install here. It is the stable set of controls around an agent session:
+Here, "harness" means the controls around an agent session, not a separate tool to install:
 
 ```text
 model + reasoning effort + mode + agent/profile + loaded skills + active MCP/tools + output filter + repo instructions
@@ -483,15 +481,15 @@ Each mode has a fundamentally different token cost profile:
 | **Edit** | 1-2 | File read/write | Target file + instructions | Single-file changes |
 | **Agent** | 5-25 | Full toolset | Everything + tool schemas | Multi-step, multi-file tasks |
 
-**The cost multiplier:** Agent mode costs 5-25x more than Ask mode for the same prompt. A simple question in Agent mode triggers file reads, tool evaluations, and multi-step reasoning — all unnecessary for "what does this function do?"
+The table's 5-25 calls explain why Agent mode can cost much more for a simple question. File reads, tool selection, and multi-step reasoning add little when the supplied context already answers "what does this function do?"
 
 ### 4.5.2 The Agent Mode Internal Loop
 
-Understanding the loop helps you minimize steps:
+Each agent step adds context for later steps:
 
 ![Agent mode cost loop: load context, choose a tool, ingest the tool result, replay prior context, and repeat until the task is complete.](assets/diagrams/agent-cost-loop.svg)
 
-**Key insight:** Context grows with every step. Step 15 carries all the context from steps 1-14 plus the original prompt. This is why long agent sessions get expensive fast.
+By step 15, the request carries context from steps 1-14 as well as the original prompt. Long sessions repeatedly process that growing history.
 
 ### 4.5.3 Minimizing Agent Steps
 
@@ -525,7 +523,7 @@ Create a plan before invoking agent mode:
 4. Run `npm test` — expect all pass
 ```
 
-Then prompt: "Execute plan.md." The agent follows the plan instead of discovering the path itself. Fewer exploration steps = fewer tokens.
+Then prompt: "Execute plan.md." The saved steps reduce how much the agent must discover during execution.
 
 **Use CLI composition instead of agentic tool loops for deterministic operations:**
 
@@ -560,7 +558,7 @@ Relevant settings that affect agent token usage:
 
 **`maxRequests`** caps how many tool-call requests the agent can make. Lower = fewer tokens, but the agent might not finish complex tasks. Start at 10-15, increase only when needed.
 
-For repeat workflows, pair this with a custom agent profile and a clean VS Code profile. Disable extensions that inject skills, agents, MCP servers, or tool surfaces you do not need for coding. The most predictable setup is boring: one focused agent, one intended model, and only the tools required for the repo.
+For repeat workflows, use a focused custom agent and a VS Code profile with only the needed extensions. Keep the model and tool set consistent.
 
 ### 4.5.5 Custom Instructions for Agent Efficiency
 
@@ -582,9 +580,7 @@ These directives reduce unnecessary tool calls. Each skipped tool call saves 100
 
 ## 4.6 Admin Guardrails Live Elsewhere
 
-This page is for practitioner setup. If you are making customer or enterprise rollout decisions, use [Enterprise Governance](12-enterprise-governance.md) instead.
-
-That chapter owns:
+For rollout controls, see [Enterprise Governance](12-enterprise-governance.md):
 
 - user-level AI-credit budgets
 - heavy-usage monitoring

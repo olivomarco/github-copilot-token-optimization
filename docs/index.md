@@ -1,6 +1,6 @@
 # Token Optimization Guide
 
-Practical guide to reducing GitHub Copilot token spend while keeping answers and code useful.
+Reduce GitHub Copilot token spend without losing useful answers or code.
 
 [Start with Part 1](01-why-tokens-matter.md){ .md-button .md-button--primary }
 [Jump to Practical Setup](10-practical-setup.md){ .md-button }
@@ -9,13 +9,13 @@ Practical guide to reducing GitHub Copilot token spend while keeping answers and
 
 ## What This Covers
 
-- Why token usage actually costs money under Usage-Based Billing
-- Why output control usually beats prompt compression on raw ROI
+- How Usage-Based Billing turns token usage into cost
+- Why cutting unwanted output can save more than shortening prompts
 - How to shrink always-on context, history, and tool overhead
 - How model-specific prompt guides improve first-pass quality and reduce rework
 - When Ask Mode, Edit Mode, and Agent Mode make financial sense
 - How to set enterprise guardrails without relying on unsupported controls
-- How to turn this repo into repeatable team habits
+- How to make these practices part of your team's work
 
 ## Fastest Wins
 
@@ -28,7 +28,7 @@ Practical guide to reducing GitHub Copilot token spend while keeping answers and
 7. Convert DOCX/PDF/Office/media inputs to Markdown before AI work; start with [MarkItDown](https://github.com/microsoft/markitdown).
 8. Audit long-running agent sessions and repeated back-and-forth.
 9. Install one shell-output filter: [RTK](https://github.com/rtk-ai/rtk) or [`snip`](https://github.com/edouard-claude/snip). These CLI proxies filter `git`, test runners, `grep`, build tools, and other command output before it reaches the agent. Use one filter layer per command path; do not stack them by default.
-10. Build a persistent codebase graph with [Graphify](https://github.com/Graphify-Labs/graphify) — map code once via tree-sitter AST, write `graphify-out/graph.json`, then let agents query the graph instead of re-reading project files each session. Install: `uv tool install graphifyy`.
+10. For repeated navigation in large repos, try [Graphify](https://github.com/Graphify-Labs/graphify). It maps code with tree-sitter AST and writes `graphify-out/graph.json`, which agents can query instead of repeating structural file reads. Install: `uv tool install graphifyy`.
 
 ## Read by Topic
 
@@ -61,9 +61,9 @@ Practical guide to reducing GitHub Copilot token spend while keeping answers and
 
 - **UBB**: usage-based billing. Copilot Business and Enterprise spend is tracked through AI-credit usage rather than request counters.
 - **AI credits**: the pooled billing unit used after the cutover.
-- **Auto mode**: Copilot's default model selector. Good default lane when you do not need to pin a model.
+- **Auto mode**: Copilot's default model selector. Use it when you do not need a specific model.
 - **Ask Mode**: single-shot interaction. Lowest-overhead choice for simple questions.
-- **Agent Mode**: multi-step interaction. Higher leverage, higher cost.
+- **Agent Mode**: multi-step interaction for tasks that need tools. More capable, but more expensive.
 - **Content Exclusion**: admin control for keeping selected repo content out of Copilot context.
 - **Format tax**: extra tokens from rich file metadata and layout noise in DOCX, PDF, HTML, slides, spreadsheets, images, and audio/video extraction. Convert to Markdown first.
 

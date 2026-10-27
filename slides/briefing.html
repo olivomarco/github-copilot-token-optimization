@@ -39,7 +39,7 @@
         <section>
           <p class="kicker">Practitioner briefing</p>
           <h1>GitHub Copilot Token Optimization</h1>
-          <p>18 actions for cheaper, faster, more reliable AI-assisted engineering.</p>
+          <p>Reduce token spend, avoid rework, and verify what ships.</p>
           <p class="small muted">Need the full training? <a href="index.html">Open the 8-hour workshop</a>.</p>
         </section>
 
@@ -48,7 +48,7 @@
           <div class="grid-3">
             <div class="card"><h3>Spend less</h3><p>Reduce unnecessary input, output, and tool overhead.</p></div>
             <div class="card"><h3>Move faster</h3><p>Keep context focused. Avoid expensive rework loops.</p></div>
-            <div class="card"><h3>Ship better</h3><p>Plan, verify, and use the right agent mode for the task.</p></div>
+            <div class="card"><h3>Verify results</h3><p>Plan, test, and use the right agent mode for the task.</p></div>
           </div>
           <p class="small muted">Community guidance, not official GitHub or Microsoft policy.</p>
         </section>
@@ -64,27 +64,27 @@
         </section>
 
         <section>
-          <h2>Priority stack</h2>
+          <h2>Where to start</h2>
           <ol>
             <li><strong class="accent">Constrain output.</strong> Stop paying for prose you do not need.</li>
             <li><strong class="accent">Shrink context.</strong> Keep always-on instructions and files focused.</li>
             <li><strong class="accent">Reduce tool overhead.</strong> Load only needed MCP tools and compress command output.</li>
-            <li><strong class="accent">Avoid rework.</strong> Choose the right mode, model, plan, and verification.</li>
+            <li><strong class="accent">Avoid rework.</strong> Choose the mode and model, agree on a plan, then verify.</li>
           </ol>
         </section>
 
         <section>
           <h2>1. Default to constrained output</h2>
           <div class="quote">Code only. No explanation unless asked.</div>
-          <p>Use short, explicit formats for code tasks, reviews, and summaries. Output control compounds across every interaction.</p>
+          <p>Ask for a specific format in code tasks, reviews, and summaries. Cut explanations you do not need.</p>
           <p class="small muted">Do not compress reasoning or evidence when the task needs it.</p>
         </section>
 
         <section>
           <h2>2. Compress always-on instructions</h2>
           <div class="grid">
-            <div class="card"><h3>Keep</h3><p>Project landmines, commands, naming, architecture rules, output constraints.</p></div>
-            <div class="card"><h3>Remove</h3><p>Boilerplate, discovery facts, duplicate rules, occasional workflow checklists.</p></div>
+            <div class="card"><h3>Keep</h3><p>Project pitfalls, required commands, naming, architecture rules, output constraints.</p></div>
+            <div class="card"><h3>Remove</h3><p>Boilerplate, facts visible in code, duplicate rules, occasional checklists.</p></div>
           </div>
           <p>Every token in <code>.github/copilot-instructions.md</code> is paid repeatedly. Put rare guidance in scoped or on-demand files.</p>
         </section>
@@ -103,7 +103,7 @@
           <h2>4. Protect cached prefixes</h2>
           <p>For one long task, keep this stable:</p>
           <div class="quote">{ model, reasoning effort, loaded skills, MCP/tool set, agent/profile }</div>
-          <p>Changing the lane or harness can lose cached-prefix savings. Start a fresh chat with a compact handoff instead.</p>
+          <p>Changing these settings can lose cache savings. Start a fresh chat with a short handoff when a change is needed.</p>
         </section>
 
         <section>
@@ -122,7 +122,7 @@
             <li><strong>Auto first</strong> for everyday work.</li>
             <li><strong>Lightweight</strong> for lookup, syntax, small mechanical edits.</li>
             <li><strong>Strong reasoning</strong> for planning, architecture, and hard debugging.</li>
-            <li><strong>Execution lane</strong> after the hard decisions are written down.</li>
+            <li><strong>Cheaper execution model</strong> once the plan captures the hard decisions.</li>
           </ul>
           <p>Choose reasoning effort before the long session. Do not raise it mid-thread.</p>
         </section>
@@ -153,7 +153,7 @@
         </section>
 
         <section>
-          <h2>10. Reuse codebase orientation</h2>
+          <h2>10. Reuse a codebase map</h2>
           <p><a href="https://github.com/Graphify-Labs/graphify">Graphify</a> maps a large repo once, then agents query structure instead of repeatedly reading broad file sets.</p>
           <pre><code>graphify query "where is auth middleware?"
 graphify path "Router" "Database"</code></pre>
@@ -166,13 +166,13 @@ graphify path "Router" "Database"</code></pre>
             <div class="card"><h3>In-session</h3><p>Use <code>/context</code> to inspect Copilot CLI context pressure and loaded tools.</p></div>
             <div class="card"><h3>Cross-session</h3><p><a href="https://github.com/tokentopapp/tokentop">Tokentop</a> shows local live tokens, cost, burn rate, and budget alerts.</p></div>
           </div>
-          <p>Visibility finds waste. It does not compress context by itself.</p>
+          <p>Use these to find waste; neither tool compresses context.</p>
         </section>
 
         <section>
           <h2>12. Set a stable session harness</h2>
           <div class="quote">Model + effort + mode + agent + skills + MCP tools + output filter + repo instructions</div>
-          <p>Choose it before long work. If the task needs a different harness, create a fresh session rather than mutating a long transcript.</p>
+          <p>Choose these settings before long work. If they need to change, start a fresh session with the relevant context.</p>
         </section>
 
         <section>
@@ -182,7 +182,7 @@ graphify path "Router" "Database"</code></pre>
             <li>Run the targeted test, build, or check.</li>
             <li>Report evidence, not a generic “done.”</li>
           </ol>
-          <p>Small verification cost prevents a new debugging or review session later.</p>
+          <p>Check the result before review exposes missing work.</p>
         </section>
 
         <section>

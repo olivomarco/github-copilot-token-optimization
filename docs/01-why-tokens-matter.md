@@ -6,7 +6,7 @@
 
 ## 1.1 What Are Tokens?
 
-Tokens are the fundamental units that large language models read and write. They're not words, not characters — they're **subwords**, created by an algorithm called Byte-Pair Encoding (BPE).
+Large language models read and write tokens. A token can represent a word, part of a word, or punctuation. Byte-Pair Encoding (BPE) builds these units from recurring byte sequences.
 
 ### How BPE works
 
@@ -27,9 +27,9 @@ The result: common English words become single tokens, while rare or long words 
 | `I met a huge dog` | `I` `met` `a` `huge` `dog` | 5 |
 | `Sure, I'd be happy to help you with that!` | (each word/punctuation) | ~10 |
 
-That last example — 10 tokens of zero information. This is the core insight behind token optimization.
+The last example spends about 10 tokens on an opener without answering the question. Cutting that kind of filler is a simple way to reduce token use.
 
-**Key fact:** 8,311 of the 10,000 most common English words tokenize as a single token in the Claude 3 tokenizer. Common words are cheap. Filler words are still 1 token each — and they add nothing.
+In the Claude 3 tokenizer, 8,311 of the 10,000 most common English words tokenize as a single token. Common words are cheap individually, but unnecessary words still add up.
 
 ## 1.2 Why You Should Care
 
@@ -37,17 +37,17 @@ Every token you send or receive has a cost. Here's how:
 
 | Dimension | Impact |
 |-----------|--------|
-| **Cost** | Tokens = money. API pricing is per-token. GitHub Copilot usage limits are token-based. **Critical asymmetry: output tokens cost 5× more per token than input tokens** (Anthropic: $1/$5 Haiku, $3/$15 Sonnet, $5/$25 Opus per MTok). Copilot UBB uses the same bucket structure. This means every unwanted sentence in a response costs 5× what that same sentence would cost in your prompt. Output control has the highest per-token ROI of any technique in this guide |
+| **Cost** | API pricing is per-token, and GitHub Copilot usage limits are token-based. In the Anthropic examples, **output costs 5× as much per token as input**: $1/$5 for Haiku, $3/$15 for Sonnet, and $5/$25 for Opus per MTok. Copilot UBB also separates token buckets; see [Model Selection & Pricing](11-models-and-pricing.md) before applying vendor rates to Copilot spend |
 | **Rate limits** | Fewer tokens per request = more requests per minute before hitting caps |
 | **Context window** | Finite space shared between input (your prompt + context) and output (the response). Waste input tokens → less room for output |
-| **Speed** | Fewer input tokens = faster time-to-first-token. You literally get answers faster |
+| **Speed** | Fewer input tokens reduce time-to-first-token |
 | **Billing** | As of June 1, 2026, GitHub Copilot bills usage as **usage-based billing (UBB)**. Each interaction is metered in three buckets — input tokens (prompt + context + history), output tokens (the response), and cached tokens (reused context, billed at ~10% of input rate). Cost = (input × input rate) + (cached × cache rate) + (output × output rate). Business and Enterprise seats include pooled AI credits ($30/seat for CB, $70/seat for CE) shared across the org. Code completion stays unlimited |
 
-**The compound effect:** Most of your input tokens are not from what you type — they come from file context, conversation history, system prompt, and MCP tool schemas. Your typed prompt is typically 5–100 tokens of a total input that can reach 5,000–50,000+ in agent mode. The biggest input levers are structural (instruction file size, tab management, context scoping). The biggest cost-per-token lever is output: 5× pricing premium, directly addressable with one line in `copilot-instructions.md`.
+Most input tokens come from file context, conversation history, the system prompt, and MCP tool schemas. Your typed prompt is typically 5–100 tokens within a total input that can reach 5,000–50,000+ in agent mode. To reduce input, focus on instruction size, open tabs, and context scope. To reduce output, ask for only the response you need.
 
 ## 1.3 How GitHub Copilot Uses Tokens
 
-Understanding what Copilot does behind the scenes helps you optimize:
+Copilot's input includes:
 
 ![Token cost anatomy: input tokens include hidden context, output tokens are the visible answer, and stable cached tokens get cheaper.](assets/diagrams/token-cost-anatomy.svg)
 
@@ -57,9 +57,9 @@ Understanding what Copilot does behind the scenes helps you optimize:
 - **Conversation history:** All previous messages in the current conversation
 - **Your prompt:** What you actually type
 
-**Hidden overhead:** Copilot adds context you don't see — repo structure, file contents, import graphs. This is why your 20-word prompt might consume 2000+ input tokens.
+Copilot also adds repo structure, file contents, and import graphs. A 20-word prompt can therefore consume 2000+ input tokens.
 
-**Coding Agent multiplier:** The GitHub Coding Agent runs multi-step sessions. Each step involves reading files, making decisions, writing code. A single issue-to-PR session can consume tens of thousands of tokens. Savings compound across those steps.
+The GitHub Coding Agent reads files, makes decisions, and writes code across multiple steps. A single issue-to-PR session can consume tens of thousands of tokens, so reducing repeated context matters throughout the session.
 
 ## 1.4 Who This Guide Is For
 

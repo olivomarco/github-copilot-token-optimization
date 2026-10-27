@@ -1,0 +1,3 @@
+# Tone of voice
+
+Direct.

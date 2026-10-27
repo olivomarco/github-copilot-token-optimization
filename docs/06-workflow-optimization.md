@@ -6,7 +6,7 @@
 
 ## 2.5.1 Commit Messages
 
-Conventional Commits format. Subject ≤50 chars. Body only when "why" isn't obvious.
+Use Conventional Commits with a subject of ≤50 characters. Add a body when the reason for the change is not obvious.
 
 **Verbose commit (~25 tokens):**
 
@@ -23,7 +23,7 @@ feat: add password reset via settings page
 Sends confirmation email on reset.
 ```
 
-Savings seem small per-commit, but the Coding Agent reads git history for context. Terse commits across a repo's history compound.
+The Coding Agent reads git history for context, so concise commits reduce input across later sessions.
 
 ## 2.5.2 PR Reviews
 
@@ -44,7 +44,7 @@ this property to handle this edge case properly.
 L42: 🔴 bug: user can be null here. Add null guard before .email access.
 ```
 
-**Savings: ~70%.** Same information. Same actionability. Fraction of the tokens.
+**Savings: ~70%.** The shorter comment still identifies the bug, location, and fix.
 
 Severity prefixes encode priority in 1-2 tokens:
 
@@ -54,8 +54,6 @@ Severity prefixes encode priority in 1-2 tokens:
 - ❓ Question — needs clarification
 
 ## 2.5.3 Ask Mode vs. Agent Mode
-
-This is one of the higher-leverage savings opportunities in the guide.
 
 **Agent Mode** can trigger 3-10 internal model calls per visible action. It reads files, plans, executes, verifies. Each step costs tokens.
 
@@ -75,7 +73,7 @@ This is one of the higher-leverage savings opportunities in the guide.
 
 ### Advanced Copilot CLI tactic: CodeAct
 
-There is one useful exception for **tool-heavy Copilot CLI sessions**. [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin) is an optional external plugin that changes the execution shape: instead of model -> tool -> model -> tool across many turns, the agent writes one Python program that chains the work together and runs it in one sandboxed execution.
+For **tool-heavy Copilot CLI sessions**, the optional external [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin) can combine tool operations. Instead of alternating model and tool calls across many turns, the agent writes a Python program and runs the sequence in one sandboxed execution.
 
 Why this can save tokens:
 
@@ -95,7 +93,7 @@ When not to use it:
 - Normal IDE chat/edit workflows where the plugin does not apply
 - Teams that do not want an external plugin in the workflow
 
-Keep the claim bounded: this guide is **not** benchmarking CodeAct itself. The plugin README reports lower token use on its own benchmark prompts, including MCP-loaded cases, but that is plugin-reported task data, not a universal savings baseline.
+The plugin README reports savings on its own benchmark prompts, including MCP-loaded cases. This guide has not benchmarked CodeAct independently; those results do not establish savings for every task.
 
 ### Complementary: RTK or snip for tool output compression
 
@@ -105,15 +103,13 @@ These tools intercept `git`, test runners, `grep`, `ls`, and other dev commands 
 
 ## 2.5.4 Default to Auto Model Selection
 
-The model picker is one of the highest-cost control surfaces in Copilot. Pinning a high-effort model "just in case" applies that model's per-token rate to every interaction in the session — including the trivial ones.
+Leaving a high-effort model selected applies its rate to every interaction, including simple questions.
 
-**The right default is Auto.** Per GitHub's official docs, Auto chooses from the supported Auto-selection pool based on real-time system health and model performance, and on paid plans it bills at a discounted rate compared to manually pinning the same model. Treat it as the best default baseline, not as automatic escalation to every premium model. Higher-cost models still need to be pinned deliberately. Override only when you know better:
+**Use Auto by default.** GitHub documents selection from a supported pool based on real-time system health and model performance, with a paid-plan discount compared with selecting the same model manually. Auto does not escalate to every premium model. Select a model manually when the task calls for it:
 
 - Pin to a cheap/fast model when you *know* the task is trivial (autocomplete-style, syntax lookup, one-line edit).
 - Pin to a high-effort model when you *know* the task needs deep reasoning (architecture, security review, novel decomposition).
-- Otherwise, **let Auto choose.** It captures the cheap/default path automatically without making you micromanage the picker. If you want a higher-cost premium model, pin it explicitly. See [Model Selection & Pricing](11-models-and-pricing.md).
-
-Teams that switch their default from "always Sonnet" or "always Opus" to "Auto, override when needed" generally reduce spend because they stop defaulting every interaction into the higher-cost lane.
+- Otherwise, **let Auto choose.** See [Model Selection & Pricing](11-models-and-pricing.md).
 
 ### Cache-aware model workflow
 
@@ -133,7 +129,7 @@ Practical pattern:
 
 ## 2.5.5 Retune Prompts to the Target Model
 
-This is not prompt compression. It may not reduce tokens per request. It reduces total token use by improving first-pass quality, which cuts follow-up turns, repeated clarifications, and agent rework.
+Retuning a prompt may not shorten each request. Its purpose is to improve the first result and avoid follow-up turns, repeated clarification, and rework.
 
 Model providers publish prompting guides that change with model versions. Treat model upgrades like dependency upgrades: read the migration/prompt guide, then adapt your prompts and instruction files for that model's current behavior.
 
@@ -200,38 +196,38 @@ Compression has limits. Some situations demand full clarity:
 - **Complex multi-step instructions** — When fragment order could cause misreading
 - **Regulatory/compliance text** — Legal requirements demand precision
 
-A well-designed terse prompt template or agent profile can handle this automatically — dropping terse mode for security warnings and irreversible action confirmations, then resuming after that section.
+Tell terse templates or agent profiles to use full, unambiguous wording for security warnings and irreversible-action confirmations.
 
 ## 2.5.7 Close the Loop with `/chronicle`
 
-Token waste isn't only in any one prompt — it's in the **patterns** you don't notice. The same misread intent costing 5K extra tokens per session, every session. Copilot ships a built-in feedback loop for this: the [`/chronicle`](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/chronicle) slash command analyzes your local session history and tells you where Copilot got confused, where you went in circles, and how to fix it.
+Repeated misunderstandings can waste more tokens than a long prompt. Copilot CLI's [`/chronicle`](https://docs.github.com/en/copilot/concepts/agents/copilot-cli/chronicle) command analyzes local session history for confusion, repeated corrections, and other patterns worth fixing.
 
 > **Scope:** `/chronicle` is a **Copilot CLI** feature, backed by local session history in `~/.copilot/session-state/`. It runs in Copilot CLI interactive sessions — and inside **JetBrains IDEs** via interactive Copilot CLI sessions. It is **not** available in **VS Code**; for VS Code usage analytics, see [AI Engineering Coach](#258-vs-code-usage-analytics-ai-engineering-coach) below.
 >
 > **Availability:** `/chronicle` is currently experimental. Enable it with `/experimental on` in an interactive Copilot CLI session, or pass `--experimental` on the command line.
 
-The full subcommand set is `standup`, `tips`, `cost tips`, `search`, `improve`, and `reindex`. The three with the most token-saving impact:
+The subcommands are `standup`, `tips`, `cost tips`, `search`, `improve`, and `reindex`. For cost and workflow review:
 
 | Command | What it does | Token-saving payoff |
 |---------|--------------|---------------------|
-| **`/chronicle cost tips`** | Analyzes your token spend across recent sessions — prompt length, tool-call frequency, continuation steps — and suggests concrete ways to cut cost | Highest, and the most on-topic for this guide. Targets token spend directly. |
-| **`/chronicle improve`** | Scans session history for back-and-forth, misunderstood intent, and repeated corrections — then **generates custom-instruction snippets** to prevent the pattern next time | High. Cuts off recurring waste at the source. Each fix compounds across every future session in that repo. |
-| **`/chronicle tips`** | Personalized coaching based on how you actually use Copilot — surfaces features and workflow improvements you're missing | Medium. Often suggests Ask Mode, model routing, or context scoping changes worth real tokens. |
-| **`/chronicle standup`** | Generates a standup summary from your session data (branches, PRs, status) | Indirect — saves the 10 minutes you'd spend reconstructing yesterday, not direct token spend. |
+| **`/chronicle cost tips`** | Reviews prompt length, tool-call frequency, and continuation steps in recent sessions | Direct cost recommendations |
+| **`/chronicle improve`** | Finds repeated corrections and **generates custom-instruction snippets** | May prevent recurring misunderstandings |
+| **`/chronicle tips`** | Suggests features and workflow changes based on your usage | May identify better mode, model, or context choices |
+| **`/chronicle standup`** | Summarizes branches, PRs, and status from session data | Saves manual summary work, not tokens directly |
 
 ### The `cost tips` workflow
 
-The most direct fit for this guide. Run it weekly to see where your tokens actually go.
+Run it weekly to review where tokens go:
 
 ```text
 /chronicle cost tips
 ```
 
-Copilot CLI analyzes your token usage across recent sessions — looking at patterns like prompt length, tool-call frequency, and continuation steps — and surfaces specific, usage-grounded ways to reduce spend. Unlike generic advice, these recommendations are tied to your real session data, so they tend to point at the few habits costing you the most.
+Use its session-specific recommendations to choose which habits to change.
 
 ### The `improve` workflow
 
-This is the one that generates lasting fixes. Run it weekly, or any time you catch yourself thinking *"why does it keep getting this wrong?"*
+Run this weekly or when you notice repeated confusion:
 
 ```text
 /chronicle improve
@@ -239,7 +235,7 @@ This is the one that generates lasting fixes. Run it weekly, or any time you cat
 
 Copilot CLI reads your recent CLI sessions, identifies recurring confusion (e.g., it kept assuming the wrong test framework, or kept asking which directory contains the API code), and proposes additions to your custom instructions. Review the suggestions — accept the ones that match real project-specific cautions, skip the ones that are just LLM-generated boilerplate (see [Part 7: The AGENTS.md Problem](07-agents-md-problem.md) for why pruning matters).
 
-**Why this fits a token-optimization guide:** every back-and-forth turn is full input tokens (your follow-up + accumulated history) **plus** full output tokens (the corrected response). A single misread intent that costs three extra turns is easily 10K-30K tokens. Catching one pattern with `/chronicle improve` → one or two lines added to `copilot-instructions.md` → that pattern stops adding repeat token cost.
+Each correction adds your follow-up and accumulated history as input, plus a new response as output. Three extra turns can cost 10K-30K tokens. Add a project-specific instruction only when it addresses a recurring failure.
 
 ### The `tips` workflow
 
@@ -249,7 +245,7 @@ Run every week or two:
 /chronicle tips
 ```
 
-Treat the suggestions like a code review — not all are worth adopting, but the ones that match your actual workflow are usually high-ROI. Common tips that overlap with this guide: switching to Ask Mode for explanation requests, scoping instruction files with `applyTo`, disabling unused MCP servers.
+Keep suggestions that fit your workflow, such as using Ask Mode for explanations, scoping instructions with `applyTo`, or disabling unused MCP servers.
 
 ### Where this fits in the workflow
 
@@ -285,26 +281,26 @@ code --install-extension ai-engineer-coach-*.vsix
 
 Then `Cmd+Shift+P` → **AI Engineer Coach: Open Dashboard**.
 
-**How it complements `/chronicle`:** `/chronicle` acts on CLI session history to generate instruction fixes. AI Engineering Coach acts on VS Code session history to score your practice and flag structural issues (context bloat, unused MCPs, instruction-file gaps). Use both: chronicle to patch recurring prompt failures; AI Engineering Coach to audit the broader VS Code setup and track trend lines.
+Use `/chronicle` for CLI history and instruction suggestions. Use AI Engineering Coach for VS Code history, context bloat, unused MCPs, and instruction gaps.
 
 ## 2.5.9 Plan First, Then Execute (and Route the Phases)
 
-The most expensive tokens are the ones spent reaching a *wrong* outcome: an agent that codes for twenty steps in the wrong direction, then gets unwound and redone. Separating **planning** from **execution** is one of the highest-leverage habits for cutting that waste.
+An agent can spend twenty steps on the wrong approach before starting over. For complex work, agree on a plan before implementation.
 
 **The two-phase pattern:**
 
 ![Plan first, execute cheaply: use a strong model for planning, save the plan, then execute in a fresh cheaper lane and verify acceptance criteria.](assets/diagrams/plan-execute-cheaply.svg)
 
-1. **Plan in plan mode (or Ask mode) first.** Use Copilot CLI's plan mode (or VS Code Ask mode) to think through the approach *before* any code is written — files to touch, order of changes, edge cases, acceptance criteria. Planning is cheap: it's mostly reasoning, no large diffs, no repeated tool loops. This is where a stronger model earns its cost, because a good plan prevents expensive rework downstream.
-2. **Save the plan, then execute it.** Write the agreed plan to a file (e.g. `plan.md`) or a tracked issue, then start a **fresh session** and prompt the execution against that saved plan. A clean session keeps the cacheable prefix stable (see [Caching §2.3.5](04-context-management.md#235-caching-store-and-reuse-context-within-prompts)) and avoids dragging the whole planning conversation forward as input tokens on every execution turn.
+1. **Plan in plan mode (or Ask mode).** Use Copilot CLI's plan mode or VS Code Ask mode to identify files, change order, edge cases, and acceptance criteria. Use a stronger model when the decisions require it.
+2. **Save the plan, then execute it.** Put the agreed plan in a file such as `plan.md` or a tracked issue. Start a **fresh session** with that plan rather than carrying the full planning conversation into every execution turn. See [Caching §2.3.5](04-context-management.md#235-caching-store-and-reuse-context-within-prompts).
 
 **Why this saves tokens:**
 
-- **Fewer wasted steps.** A concrete, pre-agreed plan means the agent doesn't explore, guess requirements, or backtrack. Each avoided agent step is one full context reload saved (see [Minimizing Agent Steps §4.5.3](10-practical-setup.md#453-minimizing-agent-steps)).
+- **Less guessing.** A concrete plan reduces requirement discovery and backtracking. Each avoided step saves repeated context (see [Minimizing Agent Steps §4.5.3](10-practical-setup.md#453-minimizing-agent-steps)).
 - **Cheaper execution lane.** Once the hard thinking is done and captured as explicit steps, execution is often mechanical — a cheaper model (Auto or an included model) can carry it out. Reserve the premium model for the planning phase where reasoning quality moves the outcome. See [Model Routing §4.5](10-practical-setup.md#step-5-mix-models-by-task-model-routing).
 - **A clean execution context.** Starting execution from a saved plan, rather than a long plan-then-build mega-session, keeps history short and the prefix cache-friendly — input cost per turn stays low.
 
-**Rule of thumb:** plan with the strong model, execute with the cheap one, and put the plan on disk in between. The outcome is reached in fewer total tokens *and* is usually higher quality, because the plan was reviewed before a single line was written.
+Use a strong model for hard planning decisions and a cheaper one for execution when the saved plan makes the task clear.
 
 For the fuller outcome-per-token frame, skill taxonomy, benchmark caveats, and current model routing matrix, see [Outcome per Token](13-outcome-per-token.md).
 

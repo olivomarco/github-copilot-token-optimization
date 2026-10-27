@@ -6,7 +6,7 @@
 
 ## 2.1.1 Caveman-Speak
 
-The single most effective token optimization technique. Drop the linguistic scaffolding that adds tokens without adding information.
+Remove words that do not change the request. Keep the technical terms, constraints, and context the model needs.
 
 ![Prompt compression ladder: verbose text compresses through lite, full, and ultra forms while preserving technical terms and constraints.](assets/diagrams/prompt-compression-ladder.svg)
 
@@ -30,7 +30,7 @@ The single most effective token optimization technique. Drop the linguistic scaf
 | Verbose | "Hey, could you please help me refactor this function? I think it might have some issues with how it handles the authentication, and I'd really like it to be more efficient. Thanks!" | ~40 |
 | Caveman | "Refactor function. Fix auth handling. Make efficient." | ~10 |
 
-That's **75% savings on this specific, heavily-padded prompt** — and the model understands both equally well. Real developer prompts that are already relatively concise typically yield **30–50% input token savings** with full caveman.
+This heavily padded example uses **75% fewer input tokens** after compression. The guide estimates **30–50% input token savings** with full caveman for more concise developer prompts.
 
 **The pattern:** `[thing] [action] [reason]. [next step].`
 
@@ -42,7 +42,7 @@ More examples:
 | "I'd like you to add comprehensive error handling to this API endpoint, including validation of the request body." (~22) | "Add error handling to endpoint. Validate request body." (~10) | ~55% |
 | "Could you please review this pull request and let me know if there are any issues?" (~17) | "Review PR. Flag issues." (~5) | ~71% |
 
-Note: these examples all start from verbose, pleasantry-heavy prompts. Real developer prompts that are already lean will see smaller savings — typically 20–40% input reduction.
+These examples start with verbose prompts. Already-lean prompts offer less to cut: typically 20–40% input reduction.
 
 ## 2.1.2 Intensity Levels
 
@@ -94,7 +94,7 @@ Abbreviate common terms. Strip conjunctions. Arrows for causality.
 
 ## 2.1.3 Structured Format Over Prose
 
-Bullets and key-value pairs beat paragraphs. Every time.
+Use bullets or key-value pairs when a request has several distinct requirements.
 
 **Prose version (~55 tokens):**
 
@@ -118,11 +118,11 @@ Validate:
 Save to DB
 ```
 
-**Savings: ~36%.** And the structured version is arguably clearer — it forces you to separate concerns.
+**Savings: ~36%.** The structured version also separates validation, error handling, storage, and the response.
 
 ## 2.1.4 Abbreviations and Shorthand
 
-Common abbreviations that models understand perfectly:
+Common abbreviations for technical prompts:
 
 | Abbreviation | Meaning |
 |-------------|---------|
@@ -172,13 +172,13 @@ def process(nums: list[int]) -> int:
 Like getUserById but for emails. Return 404 if missing.
 ```
 
-The model gets all four equally well. The last three cost 50-67% fewer tokens.
+The last three examples use 50-67% fewer tokens. Keep enough context for the model to interpret the shorthand.
 
 ## 2.1.6 Quality Over Quantity — Scope, Don't Pile On
 
-A common failure mode: when the model gets something wrong, the instinct is to *add more instructions*. Bigger system prompt, longer rules list, more examples. This usually makes things worse — and always makes things more expensive.
+When the model gets something wrong, first check whether the request is clear. Adding global rules for a one-off problem increases context on unrelated tasks.
 
-The data-supported direction is the opposite: **focus on high-quality context, not more instructions.** Scoped guidance reduces verbose sprawling outputs and reduces runaway sessions, because the model has fewer competing signals to juggle.
+Put task-specific guidance in the task prompt. Reserve always-on instructions for rules that apply across the project.
 
 | Symptom | Wrong fix | Right fix |
 |---------|-----------|-----------|
@@ -187,11 +187,11 @@ The data-supported direction is the opposite: **focus on high-quality context, n
 | Agent goes off on a tangent | Add more global guardrails | Tighten *this* prompt's scope: name the file, name the function, name the done-condition |
 | Model forgets a convention | Paste the convention into every prompt | Put it in a scoped `applyTo` instruction file (see §2.3.4) |
 
-**Smaller scoped prompts reduce runaway sessions.** A 10-token "Fix null deref in `getUser()` L42" rarely produces a 30-step exploration. A 200-token "please look at our authentication and improve robustness" almost always does.
+Give the agent a concrete target. "Fix null deref in `getUser()` L42" identifies a problem and location; "please look at our authentication and improve robustness" leaves both open.
 
 ## 2.1.7 Declarative Guardrails
 
-Imperative instructions tell the model what to do step by step. Declarative guardrails tell it what *must be true* about the output. Declarative is shorter, more stable, and easier to compress.
+Use step-by-step instructions when order matters. Otherwise, state what must be true of the result; this is often shorter and easier to check.
 
 | Imperative (~25 tokens) | Declarative (~10 tokens) |
 |---|---|
@@ -199,13 +199,13 @@ Imperative instructions tell the model what to do step by step. Declarative guar
 | "Make sure that whenever you write a SQL query you always parameterize the values to prevent injection attacks and never use string concatenation." | "SQL: parameterized queries only. No concatenation." |
 | "Please write tests for any new code that you create, and make sure the tests cover both the happy path and the error cases." | "New code → tests. Cover happy + error paths." |
 
-Declarative phrasing also composes better. Five imperative procedures interfere with each other. Five declarative invariants stack cleanly.
+Result-focused rules avoid prescribing overlapping procedures for the same task.
 
 ## 2.1.8 Minify Instructions, Structure for Reuse
 
-Treat instruction files like code, not prose. Two practices:
+Keep instruction files short and avoid duplicate guidance:
 
-**Minify.** Strip filler the same way you'd strip whitespace from production JS. The §2.3.1 caveman compression of `copilot-instructions.md` is the canonical example. Apply the same treatment to every always-on context file.
+**Cut filler.** See the `copilot-instructions.md` example in §2.3.1. Apply the same check to other always-on context files without making instructions ambiguous.
 
 **Structure for reuse.** Don't write the same guidance into three different instruction files. Extract it once:
 
@@ -213,9 +213,7 @@ Treat instruction files like code, not prose. Two practices:
 - Per-layer specifics → scoped instruction files (`applyTo: "src/api/**"`)
 - Workflow-specific guidance → on-demand notes or prompt files
 
-A modular instruction layout is cheaper *and* more maintainable. When the convention changes, you edit one file. When you onboard a new module, you write one scoped file instead of bloating the global one.
-
-The combined effect: smaller per-interaction context, less drift, easier audits.
+When a convention changes, update it in one place. For a new module, add scoped guidance rather than expanding the global file. This keeps per-interaction context smaller and makes duplicate or conflicting rules easier to find.
 
 ---
 

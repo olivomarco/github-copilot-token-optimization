@@ -201,8 +201,7 @@
         <section>
           <p class="kicker">8 hour customer workshop</p>
           <h1>GitHub Copilot Token Optimization</h1>
-          <p>Spend fewer tokens. Keep quality. Build enterprise guardrails.</p>
-          <p class="small muted">Reveal.js deck generated from repository guide content.</p>
+          <p>Reduce token spend without losing quality. Set enterprise spending limits.</p>
           <aside class="notes">
             Open with disclaimer: community guide, not official GitHub or Microsoft guidance. Use official docs for supported controls.
           </aside>
@@ -220,7 +219,7 @@
               <p>Prompt compression, output control, context hygiene, Ask/Edit/Agent routing.</p>
             </div>
             <div class="card">
-              <h3>Ship rollout plan</h3>
+              <h3>Build a rollout plan</h3>
               <p>Enterprise budgets, model policy, instruction scope, monthly review loop.</p>
             </div>
           </div>
@@ -229,7 +228,7 @@
         <section>
           <h2>Important framing</h2>
           <div class="quote">
-            This deck is based on field guidance in this repo. It is not official GitHub or Microsoft guidance.
+            This is a community guide, not official GitHub or Microsoft guidance.
           </div>
           <p class="small">Use <code>docs.github.com/copilot</code> for supported feature behavior, billing controls, and admin policy.</p>
         </section>
@@ -256,7 +255,7 @@
 
         <section>
           <h2>Navigation</h2>
-          <p>Horizontal = chapters. Vertical = chapter slides + labs.</p>
+          <p>Move horizontally between chapters. Move vertically through each chapter's slides and labs.</p>
           <p class="small muted">Press <code>Esc</code> for overview. Press <code>S</code> for speaker notes.</p>
         </section>
 
@@ -264,13 +263,13 @@
           <section>
             <p class="kicker">Quick Start</p>
             <h2>14 things to do right now</h2>
-            <p>Start with output, then shrink structural input, then route models and tools.</p>
+            <p>Cut unwanted output, reduce repeated context, then choose models and tools by task.</p>
           </section>
 
           <section>
             <h2>Fastest wins</h2>
             <ol>
-              <li><strong>Code-only responses</strong>: highest per-token ROI.</li>
+              <li><strong>Code-only responses</strong>: skip explanations when you need only code.</li>
               <li><strong>Constrain format</strong>: bullets, one sentence, JSON, tables.</li>
               <li><strong>Shrink always-on context</strong>: instructions and agent files.</li>
               <li><strong>Use Auto by default</strong>: pin premium only when justified.</li>
@@ -304,15 +303,15 @@
             <div class="grid-3">
               <div class="card">
                 <h3>Output first</h3>
-                <p>One default changes every response.</p>
+                <p>Set a concise response default.</p>
               </div>
               <div class="card">
                 <h3>Always-on second</h3>
-                <p>Small baselines compound.</p>
+                <p>Remove context repeated on every turn.</p>
               </div>
               <div class="card">
                 <h3>Mode third</h3>
-                <p>Ask, Edit, Agent by task shape.</p>
+                <p>Choose Ask, Edit, or Agent for the task.</p>
               </div>
               <div class="card">
                 <h3>Governance fourth</h3>
@@ -357,7 +356,7 @@
               </div>
               <div class="card">
                 <h3>Core insight</h3>
-                <p><code>Sure, I'd be happy to help!</code> can burn around 10 tokens of zero technical value.</p>
+                <p><code>Sure, I'd be happy to help!</code> uses around 10 tokens without answering the question.</p>
               </div>
             </div>
           </section>
@@ -377,7 +376,7 @@
 ├─ Conversation history
 ├─ MCP tool schemas
 └─ Your typed prompt</code></pre>
-            <p class="small">Your 20-word prompt can ride inside thousands of hidden tokens.</p>
+            <p class="small">A 20-word prompt can be sent with thousands of context tokens.</p>
           </section>
 
           <section>
@@ -411,7 +410,7 @@
           <section>
             <p class="kicker">Part 2.1</p>
             <h2>Prompt compression</h2>
-            <p>Say same thing in fewer tokens. Preserve technical precision.</p>
+            <p>Say the same thing in fewer tokens. Keep technical terms and constraints exact.</p>
             <img class="diagram diagram-compact" src="../docs/assets/diagrams/prompt-compression-ladder.svg" alt="Prompt compression ladder from verbose to lite to full to ultra while preserving technical substance.">
           </section>
 
@@ -528,7 +527,7 @@ Done: targeted test passes.</code></pre>
           <section>
             <p class="kicker">Part 2.2</p>
             <h2>Language comparison</h2>
-            <p>English is usually most token-efficient for prompts.</p>
+            <p>Compare token counts, not character counts.</p>
           </section>
 
           <section>
@@ -560,7 +559,7 @@ Done: targeted test passes.</code></pre>
             <div class="quote">
               Use terse English for prompts and instructions. Do not translate to CJK to save tokens.
             </div>
-            <p class="small">If a user writes better in native language, quality can outweigh token cost. For optimization, English wins.</p>
+            <p class="small">If you express requirements more clearly in your native language, that clarity can outweigh the token savings.</p>
           </section>
 
           <section>
@@ -579,13 +578,13 @@ Done: targeted test passes.</code></pre>
           <section>
             <p class="kicker">Part 2.3</p>
             <h2>Context management</h2>
-            <p>Control what gets sent. Biggest input wins are structural.</p>
+            <p>Control which files, instructions, and history get sent.</p>
           </section>
 
           <section>
             <h2>Always-on files cost every turn</h2>
             <p><code>.github/copilot-instructions.md</code>, <code>AGENTS.md</code>, <code>CLAUDE.md</code>, and similar files can become persistent context.</p>
-            <p class="small warning">Duplicate content can be paid twice when multiple files are loaded by different tools.</p>
+            <p class="small warning">Duplicate rules add context twice when both files are loaded.</p>
           </section>
 
           <section>
@@ -617,7 +616,7 @@ API conventions:
 - Routes in src/api/routes/. Handlers thin, logic in services/.
 - Validate with zod.
 - Errors via Result&lt;T,E&gt;, never throw.</code></pre>
-            <p class="small">Pay path-specific guidance only when relevant files are in scope.</p>
+            <p class="small">Load path-specific guidance only for matching files.</p>
           </section>
 
           <section>
@@ -665,7 +664,7 @@ API conventions:
           <section>
             <p class="kicker">Part 2.4</p>
             <h2>Output control</h2>
-            <p>Tell model what not to say. Highest per-token ROI.</p>
+            <p>Ask for the answer format you need. Skip unwanted explanation.</p>
           </section>
 
           <section>
@@ -724,7 +723,7 @@ Code only. No explanation. Minimal diff.</code></pre>
           <section>
             <p class="kicker">Part 2.5</p>
             <h2>Workflow optimization</h2>
-            <p>Use cheaper interaction shapes before optimizing words.</p>
+            <p>Choose a lower-overhead workflow before shortening individual prompts.</p>
           </section>
 
           <section>
@@ -838,10 +837,10 @@ Show diff only.</code></pre>
           <section>
             <h2>Why context hurts</h2>
             <div class="grid">
-              <div class="card"><h3>Redundancy tax</h3><p>Repeats facts agent can discover.</p></div>
-              <div class="card"><h3>Attention tax</h3><p>Important rules get lost in middle.</p></div>
-              <div class="card"><h3>Anchoring trap</h3><p>Outdated tool guidance over-influences agent.</p></div>
-              <div class="card"><h3>Signal/noise</h3><p>Routine facts dilute landmines.</p></div>
+              <div class="card"><h3>Redundancy</h3><p>Repeats facts the agent can find in code.</p></div>
+              <div class="card"><h3>Attention</h3><p>Buries important rules in long context.</p></div>
+              <div class="card"><h3>Anchoring</h3><p>Steers the agent toward outdated tools.</p></div>
+              <div class="card"><h3>Signal/noise</h3><p>Makes project-specific pitfalls harder to spot.</p></div>
             </div>
           </section>
 
@@ -863,7 +862,7 @@ Show diff only.</code></pre>
             <pre><code class="language-text">Start almost empty.
 Agent trips on something -> add one line.
 Root cause fixed -> delete that line.</code></pre>
-            <p>Instruction files should grow and shrink, not accumulate like a wiki.</p>
+            <p>Remove instructions when the underlying problem is fixed.</p>
           </section>
 
           <section>
@@ -882,7 +881,7 @@ Root cause fixed -> delete that line.</code></pre>
           <section>
             <p class="kicker">Part 2.7</p>
             <h2>MCP and tool costs</h2>
-            <p>Tool schemas are hidden token tax.</p>
+            <p>Loaded tool definitions add input, even when the tool is unused.</p>
             <img class="diagram diagram-compact" src="../docs/assets/diagrams/mcp-tooling-stack.svg" alt="Tooling stack: scope MCP schemas, use CodeAct for turn loops, RTK or snip for output, Graphify for orientation.">
           </section>
 
@@ -923,7 +922,7 @@ x 200 tokens/tool
             <h2>Audit rule</h2>
             <ul>
               <li>Disable servers not needed now.</li>
-              <li>Use per-workspace config, not global everything.</li>
+              <li>Use workspace settings for project-specific servers.</li>
               <li>Prefer built-in tools over duplicate filesystem MCPs.</li>
               <li>Use skills for occasional capabilities.</li>
               <li>Scope large plugins by namespace/mode when supported.</li>
@@ -963,9 +962,9 @@ x 200 tokens/tool
 
           <section>
             <h2>Azure MCP case pattern</h2>
-            <p>One large plugin can dominate System/Tools budget.</p>
+            <p>One large plugin can account for most of the System/Tools context.</p>
             <pre><code class="language-bash">--namespace appservice --namespace cosmos --namespace keyvault --namespace storage</code></pre>
-            <p class="small">Scope by service/persona. Avoid "all tools" mode unless truly needed.</p>
+            <p class="small">Load the services each role needs. Avoid "all tools" mode unless the task requires it.</p>
           </section>
 
           <section>
@@ -993,7 +992,7 @@ x 200 tokens/tool
           <section>
             <p class="kicker">Part 3</p>
             <h2>Comparisons and data</h2>
-            <p>Use evidence to pick habits with best impact-to-effort.</p>
+            <p>Compare expected savings with effort and risk.</p>
           </section>
 
           <section>
@@ -1025,7 +1024,7 @@ x 200 tokens/tool
             <h2>Quality curve</h2>
             <pre><code class="language-text">Savings:  lite ---- full ---- ultra ---- extreme
 Risk:     low  ---- low  ---- medium --- high</code></pre>
-            <p class="accent">Sweet spot: full caveman. Maximum return, negligible risk for technical users.</p>
+            <p class="accent">Use full caveman for technical prompts only while the meaning stays clear.</p>
           </section>
 
           <section>
@@ -1122,7 +1121,7 @@ agent/profile
 active MCP/tools
 output filter
 repo instructions</code></pre>
-            <p class="small">Choose before the session starts. Stable harness = predictable cost and cache behavior.</p>
+            <p class="small">Choose settings before the session starts. Keeping them stable helps preserve cached context.</p>
           </section>
 
           <section>
@@ -1318,7 +1317,7 @@ repo instructions</code></pre>
             <div class="quote">
               outcome per token = verified work completed / total tokens spent
             </div>
-            <p class="small">A short prompt that causes wrong-direction work is more expensive than a longer plan that lands correctly.</p>
+            <p class="small">A longer plan can cost less than a short prompt that leads to the wrong implementation.</p>
           </section>
 
           <section>
@@ -1358,7 +1357,7 @@ repo instructions</code></pre>
             <h2>Skill libraries: borrow patterns</h2>
             <div class="grid">
               <div class="card"><h3>SDLC</h3><p>Superpowers, planning, TDD, branch finish.</p></div>
-              <div class="card"><h3>Handoff</h3><p>agent-toolkit patterns for requirements, plans, entropy control.</p></div>
+              <div class="card"><h3>Handoff</h3><p>agent-toolkit patterns for requirements, plans, and removing unnecessary work.</p></div>
               <div class="card"><h3>Guardrails</h3><p>Secrets, cloud, DB, Docker, dependency, and retry-stop cautions.</p></div>
               <div class="card"><h3>QA / writing</h3><p>Browser evidence, writing review, QA depth on demand.</p></div>
             </div>
@@ -1390,7 +1389,7 @@ repo instructions</code></pre>
           <section>
             <h2>Benchmark caveats</h2>
             <ul>
-              <li>Benchmarks choose candidates; repo tasks choose defaults.</li>
+              <li>Use benchmarks to shortlist models; test repo tasks to choose defaults.</li>
               <li>Harness, tools, retrieval, and reasoning effort affect scores.</li>
               <li>Compare outcome and cost together, not score alone.</li>
               <li>Label sources: verified, directional, anecdotal.</li>
@@ -1402,7 +1401,7 @@ repo instructions</code></pre>
           <section>
             <p class="kicker">Capstone</p>
             <h2>30 day token optimization plan</h2>
-            <p>Turn workshop into customer rollout.</p>
+            <p>Choose the changes, owners, and dates for a customer rollout.</p>
           </section>
 
           <section>
@@ -1422,7 +1421,7 @@ repo instructions</code></pre>
             <h2>Capstone lab</h2>
             <div class="card lab">
               <h3>Goal</h3>
-              <p>Create customer-specific action plan.</p>
+              <p>Create an action plan for one customer.</p>
               <p><strong>Sections:</strong> repo changes, user habits, MCP/tool policy, model policy, budgets, reporting, owner, due date.</p>
               <p><strong>Deliverable:</strong> 30 day plan ready for customer sponsor.</p>
               <p><strong>Time:</strong> 30 minutes.</p>

@@ -4,11 +4,11 @@
 
 ---
 
-This page is for org and enterprise admins. Goal: control spend without inventing controls GitHub does not document.
+Control Copilot spend with documented organization and enterprise controls.
 
 ## What Actually Controls Spend
 
-Three levers matter most:
+Start with:
 
 1. budget ceilings
 2. user-level budget control
@@ -18,7 +18,7 @@ Prompt compression still matters, but it is a usage-efficiency lever. It is not 
 
 ![Enterprise governance control plane: budgets, user-level budgets, and model access feed usage reports, cohorts, and review loops.](assets/diagrams/enterprise-governance-control-plane.svg)
 
-One timing rule matters: June 1, 2026 is the cutoff. After that, Business and Enterprise governance shifts to AI-credit usage under usage-based billing. Treat premium requests as legacy transition context, not as the main planning model.
+For Business and Enterprise after the June 1, 2026 billing cutover, manage AI-credit usage rather than premium-request counts.
 
 ## 1. Set Budgets First
 
@@ -30,13 +30,11 @@ Key points from GitHub docs for Business and Enterprise after June 1:
 - you can enable stop usage when budget is reached
 - user-level budgets exist, and a **$0** user budget means no access to usage-based features
 
-That budget system is the direct spend cap for AI-credit usage at enterprise, organization, cost-center, and user scope.
+For budgets and cost-center mappings that are hard to manage manually, consider [`amgdy/copilot-finops-automation`](https://github.com/amgdy/copilot-finops-automation). A version-controlled YAML file defines spend policies and team mappings. GitHub Actions validates it, previews changes, applies budgets idempotently, syncs membership, and writes audit and current-state reports.
 
-If budget and cost-center segmentation becomes hard to manage by hand, look at [`amgdy/copilot-finops-automation`](https://github.com/amgdy/copilot-finops-automation). It treats Copilot FinOps as code: one version-controlled YAML config defines AI-credit spend policies and team-to-cost-center mappings, then GitHub Actions validates the config, previews changes with dry runs, applies budgets idempotently, syncs team membership into cost centers, and writes audit/current-state reports.
+This makes changes reviewable in pull requests and supports scheduled reconciliation. Use a private repo or fork for live configuration. Keep enterprise slugs, teams, cost centers, user logins, budget numbers, reports, logs, and tokens out of public branches.
 
-Why admins should care: reviewed pull requests beat ad hoc console edits, dry runs reduce mutation risk, scheduled reconciliation catches drift, and cost-center or user-level budget materialization gives tighter segmentation for teams with different spend patterns. Use a private repo or private fork for live enterprise config; keep real enterprise slugs, teams, cost centers, user logins, budget numbers, reports, logs, and tokens out of public branches.
-
-Important caveat: budgets do **not** make prompts smaller. They do **not** reduce tokens per prompt. They cap AI-credit spend.
+Budgets cap spend; they do not reduce tokens per prompt.
 
 Practical default:
 
@@ -49,9 +47,9 @@ Practical default:
 
 For Business and Enterprise after June 1, the clean per-user cap is the **user-level AI credit budget** documented in GitHub's [usage-based billing guidance](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises). GitHub's docs explicitly say a user-level budget of **$0** means that user gets no access to usage-based features.
 
-Admin mindset: think in AI-credit usage first. Model choice, chat depth, agent duration, and user-level budget are now direct spend controls.
+Review model choice, chat depth, and agent duration alongside each user's AI-credit budget.
 
-Do **not** claim a documented org-level per-user model toggle for Copilot Chat in IDEs. GitHub's docs describe budgets, cost centers, and allowance management. They also document org and enterprise model access policy at the member level, but not a within-one-org per-user model matrix you can arbitrarily tune model-by-model.
+GitHub documents budgets, cost centers, allowance management, and org/enterprise model-access policy. The cited docs do not describe an arbitrary per-user, per-model access matrix within one org for IDE chat. Use user-level budgets for per-user spending limits.
 
 Practical pattern:
 
@@ -66,7 +64,7 @@ Build cohorts from actual spend, not guesswork:
 3. inspect the usage bands it surfaces, such as power users, high-usage users, baseline users, and low-usage users
 4. map those cohorts to different budget defaults, review cadence, and escalation paths
 
-Why this matters: admins should not give every developer the same AI-credit ceiling when the spend profile is visibly different. Cohorts let you keep broad access for normal users, protect budget for people doing real agent-heavy work, and catch inactive or low-value usage before it becomes a pooled-budget surprise.
+Use these cohorts to match budgets to actual work. Agent-heavy users may need more headroom; inactive or low-value usage needs review before it consumes pooled credits.
 
 Post-June 1 admin tips:
 
@@ -75,8 +73,6 @@ Post-June 1 admin tips:
 3. remember code completions and next edit suggestions are not billed in AI credits, so do not treat all Copilot activity as equal cost
 4. review model choice regularly because chat-style interactions now consume AI credits based on model and tokens
 5. keep terse repo instructions in IDE workflows because lower output volume still reduces AI-credit burn even when billing moves off request counts
-
-Legacy note: if you are still preparing customers before June 1, [premium request management](https://docs.github.com/en/copilot/concepts/billing/premium-request-management) explains the outgoing control model. Use that only as transition guidance.
 
 ## 3. Review Models Before You Enable Them
 
@@ -94,9 +90,7 @@ Practical review checklist:
 4. what usage report you will inspect after enablement
 5. what rollback rule you will use if spend jumps without quality gain
 
-Bad rollout pattern: enable every premium model for the whole org because a small group asked for one hard task.
-
-Better rollout pattern: approve model access in stages, then compare usage and output quality before widening.
+Approve model access in stages. Compare usage and output quality before expanding access beyond the teams that need it.
 
 ## 4. Keep Custom Instructions in the Right Scope
 
@@ -110,7 +104,7 @@ Important scope rule from GitHub docs:
 - organization custom instructions are currently supported for Copilot Chat on GitHub.com, Copilot code review on GitHub.com, and Copilot cloud agent on GitHub.com
 - do **not** assume organization instructions apply in IDEs
 
-That last point matters for cost control. If you want terse behavior in VS Code or JetBrains, put the always-on guidance in repository instructions, not only in org instructions.
+For terse behavior in VS Code or JetBrains, put the guidance in repository instructions, not only in org instructions.
 
 Practical split:
 
@@ -120,20 +114,14 @@ Practical split:
 
 ## 5. Separate Orgs Can Work, but Treat It as a Caveated Workaround
 
-GitHub's model-access and billing controls make separate organizations a possible way to maintain different org-level model policies or billing boundaries.
-
-This can be useful when you need different org-level model policies or distinct billing boundaries for different user populations and your current org structure already matches those groups.
-
-But this is a caveated workaround, not a magic governance feature.
-
-Tradeoffs:
+Separate organizations can support different model policies or billing boundaries when user groups already align with org structure. Weigh that separation against:
 
 - more admin overhead
 - license-assignment complexity
 - awkward fit if users span many orgs
 - SCIM and cost-center structure may drive the answer more than Copilot alone
 
-Use separate orgs only when the policy or billing boundary is worth the operational cost. It is a fallback, not the first choice.
+Use separate orgs only when the policy or billing boundary justifies that overhead.
 
 ## 6. Measure the Right Thing
 
@@ -148,7 +136,7 @@ Supplemental benchmarking can help when comparing model quality and price postur
 
 ## 7. June 1 Cutover Checklist
 
-If you are preparing customers for the June 1 shift, do this first:
+For the June 1, 2026 billing model:
 
 1. move admin guidance from request counters to AI-credit budgets
 2. build spend cohorts from historical CSVs before assigning user-level or pooled budgets
@@ -167,8 +155,6 @@ If you are preparing customers for the June 1 shift, do this first:
 6. review premium models before enablement
 7. keep repo instructions small so IDE workflows inherit the right defaults
 8. use separate org segmentation only if cost-center boundaries already support it
-
-This is boring on purpose. Cheap defaults first. Premium access by exception. Measurement before expansion.
 
 ---
 

@@ -4,11 +4,11 @@
 
 ---
 
-> **Distinct conventions, shared cost profile.** `AGENTS.md` (cross-tool convention), `.github/copilot-instructions.md` (Copilot-native), and `CLAUDE.md` (Claude Code convention) are **different files with different historical owners and different scopes** — they are not interchangeable, and a repo can legitimately use more than one. What they share is the cost dynamic this section is about: each functions as **always-on context**, loaded into every interaction by the tool that reads it. The research below was performed on `AGENTS.md`, but the underlying mechanism (redundant context dilutes attention and inflates token cost) applies to any always-on instruction file. Apply the pruning guidance below to whichever file(s) your repo uses, and the compression guidance in [Part 2.3](04-context-management.md) likewise.
+> `AGENTS.md`, `.github/copilot-instructions.md`, and `CLAUDE.md` have different scopes and tool support. A repo can use more than one, but each adds context when its tool loads it. The research below tested `AGENTS.md`. Use it to inform pruning of other always-on files, not as a separate benchmark of those formats. For compression examples, see [Part 2.3](04-context-management.md).
 
 ## 2.6.1 The Research: Context Files Often Hurt
 
-A persistent assumption in AI-assisted development: more context = better results. Write a detailed `AGENTS.md`, `copilot-instructions.md`, or `CLAUDE.md` — or run `/init` to generate one — and the agent performs better.
+Does a detailed context file improve agent performance? The study below tested that assumption.
 
 **The ETH Zurich study (Gloaguen et al., AGENTBENCH, Feb 2026) tested this at scale: 138 tasks across 12 repositories, 4 different coding agents.** The results:
 
@@ -19,7 +19,7 @@ A persistent assumption in AI-assisted development: more context = better result
 | Cost increase with LLM-generated context | **20-23%** more tokens burned |
 | GPT-5.2 reasoning overhead | **22%** more reasoning tokens with context file |
 
-That's not "neutral." LLM-generated context files actively make agents worse while costing more.
+In these settings, generated context files increased cost without improving average correctness.
 
 ## 2.6.2 Human-Written Files: Marginal at Best
 
@@ -31,27 +31,25 @@ Human-written context files performed slightly better — but not consistently:
 | Claude Code | **Worse** with human-written context |
 | File discovery rates | Identical with or without context files |
 
-The last point is important: agents find the same files regardless. The context file doesn't help them navigate — they already know how to `ls` and `grep`.
+File discovery rates were unchanged: agents could find the relevant files without the context file.
 
 ## 2.6.3 Why More Context Hurts
 
 Four mechanisms explain the findings:
 
-**1. Redundancy tax.** LLM-generated context files contain information the agent discovers by reading code. The agent reads your `package.json`, your imports, your directory structure — and then reads the context file that says the same things. Double the tokens, zero new information.
+**1. Redundancy.** A context file may repeat facts already available in `package.json`, imports, and the directory structure. The agent processes the same information twice.
 
-**2. Attention tax.** LLMs have U-shaped attention: they attend strongly to the beginning and end of context, but the middle gets lost (Liu et al., "Lost in the Middle," 2023). A 200-line `AGENTS.md` means the guidelines in lines 50-150 get ignored. Your most important rules are the ones most likely to be skipped.
+**2. Attention.** Liu et al., "Lost in the Middle" (2023), describe weaker use of information in the middle of long context. Important rules can be harder to retain when buried in a 200-line `AGENTS.md`.
 
-**3. Anchoring trap.** Agents follow context file instructions too faithfully — even outdated ones. If your `AGENTS.md` mentions a specific tool, agents use it **1.6x more** than they otherwise would, even when another tool is better for the task.
+**3. Anchoring.** Agents can follow outdated guidance too closely. Mentioning a tool in `AGENTS.md` increased its use **1.6x**, even when another tool better suited the task.
 
 **4. Signal-to-noise ratio.** Every token of context competes for the model's attention. Low-value context (routine facts like "this project uses TypeScript" when `tsconfig.json` exists) dilutes the high-value context (project-specific cautions like "don't refactor the auth module — it has a pending security audit").
 
 ## 2.6.4 The Counterpoint: Efficiency vs. Correctness
 
-Lulla et al. (Jan 2026) found human-written `AGENTS.md` **reduced runtime 29%** and **output tokens 17%**. That sounds great — until you read the methodology.
+Lulla et al. (Jan 2026) found human-written `AGENTS.md` **reduced runtime 29%** and **output tokens 17%**. They measured efficiency, not correctness.
 
-They measured **efficiency**, not **correctness**. Context files help agents navigate faster. They don't help agents arrive at the right answer.
-
-The distinction matters: a faster wrong answer is still wrong. And the 17% token reduction from faster navigation is offset by the 20-23% cost increase from processing the context file itself.
+Keep those outcomes separate. Faster navigation is useful, but it does not establish that the answer is correct.
 
 ## 2.6.5 What to Actually Put in Context Files
 
@@ -69,7 +67,7 @@ What survives this filter:
 | "Deploy requires VPN connection" | "Main branch is protected" |
 | "DB migrations must run in order" | "We use PostgreSQL" |
 
-**The pattern:** Keep only **landmines** — things that look normal but cause mistakes. Delete everything discoverable.
+Keep project-specific pitfalls: things that look routine but cause mistakes. Remove facts the agent can discover from code.
 
 ## 2.6.6 The Ideal: Treat It Like a Bug Tracker
 
@@ -79,7 +77,7 @@ Agent trips on something → add one line.
 Root cause gets fixed → delete that line.
 ```
 
-Your context file should grow and shrink like a bug tracker, not accumulate like a wiki. If it's only getting longer, you're doing it wrong.
+Add guidance when a recurring mistake needs it. Remove that guidance when the underlying problem is fixed.
 
 ## 2.6.7 This Repo's Approach: 6 Lines, ~50 Tokens
 
@@ -96,7 +94,7 @@ Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
 
 **6 lines. ~50 tokens.** Loaded every interaction.
 
-Compare with typical `/init` output: **200+ lines, ~1,500 tokens.** That's 1,450 tokens of waste on every single interaction — and per the research, it likely makes the agent perform *worse*.
+Compare this with a typical `/init` file of **200+ lines, ~1,500 tokens**: a difference of 1,450 tokens per load. Keep the extra guidance only if it helps the agent complete the task.
 
 **The math over a session:**
 

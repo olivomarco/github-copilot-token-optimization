@@ -6,11 +6,7 @@
 
 ## 2.2.1 The Token Economics of Human Languages
 
-There's a persistent assumption: *"Write prompts in Chinese or Japanese — fewer characters means fewer tokens."*
-
-**That does not hold up in token counts.**
-
-Here is a sample comparison. Test sentence: "I met a huge dog" (and equivalents):
+Fewer characters do not necessarily mean fewer tokens. Compare "I met a huge dog" with its equivalents:
 
 | Language | Sentence | Characters | Tokens | vs. English |
 |----------|----------|-----------|--------|-------------|
@@ -23,7 +19,7 @@ Here is a sample comparison. Test sentence: "I met a huge dog" (and equivalents)
 | **Russian** | Я встретил огромную собаку | 26 | **14** | 2.8x |
 | **Hebrew** | פגשתי כלב ענק | 13 | **16** | 3.2x |
 
-Chinese uses 8 characters vs. English's 16. But it costs **11 tokens** vs. English's **5**. More than double.
+In this sample, Chinese uses 8 characters and English uses 16, but Chinese costs **11 tokens** against English's **5**.
 
 ## 2.2.2 Why This Happens
 
@@ -49,7 +45,7 @@ Across larger text samples (Capodieci/Castillo research):
 
 ## 2.2.4 What About Classical Chinese (Wenyan 文言文)?
 
-Classical Chinese is extraordinarily information-dense. Where modern Chinese might use 8 characters, wenyan might use 4. But the tokenizer doesn't care about information density — it cares about byte sequences.
+Classical Chinese can express the same idea in fewer characters than modern Chinese. That does not guarantee fewer tokens: tokenization depends on byte sequences.
 
 **Example — "Explain database connection pooling":**
 
@@ -61,7 +57,7 @@ Classical Chinese is extraordinarily information-dense. Where modern Chinese mig
 
 At best, wenyan-ultra ties with terse English. At worst, it costs more. And the model understands English better because its training data is English-dominated.
 
-**Verdict:** Wenyan modes are interesting for creative/educational purposes. They are **not recommended for actual token optimization.** Use terse English instead.
+Use wenyan for creative or educational work, not to save tokens. This guide recommends terse English for token optimization.
 
 ## 2.2.5 Practical Takeaways
 
@@ -81,15 +77,6 @@ Converting non-Latin scripts to Latin characters helps:
 | Russian (Transliterated) | Ya vstretil ogromnuyu sobaku | 11 | 21% cheaper |
 | Hebrew (Native) | פגשתי כלב ענק | 16 | baseline |
 | Hebrew (Transliterated) | pgSti klv 3nq | 9 | 44% cheaper |
-
-### Key Finding
-
-> **English is the most token-efficient language for LLM prompts. Period.**
->
-> CJK languages use fewer characters, but each character costs ~1-1.4 tokens.
-> The net result is 1.7-2.4x MORE tokens than English for the same meaning.
->
-> Don't write prompts in Chinese hoping to save tokens. You'll spend more.
 
 ---
 

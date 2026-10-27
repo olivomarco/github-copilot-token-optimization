@@ -17,7 +17,7 @@
 | Structured | `fn: add error handling\n- null input\n- invalid type\n- network error` | ~12 | Good |
 | Code-centric | `# TODO: handle None, TypeError, ConnectionError` | ~8 | Good |
 
-All six produce correct error handling code. The token costs range from 7 to 40. That's a **5.7x difference** for the same result.
+The estimated prompt sizes range from 7 to 40 tokens, a **5.7x difference**. The shortest examples need enough surrounding context to remain clear.
 
 ## 3.2 Language Comparison Tables
 
@@ -52,7 +52,7 @@ Source: Capodieci/Castillo research across larger text samples.
 
 ## 3.3 Technique-by-Technique Matrix
 
-The complete comparison of every technique covered in this guide:
+Compare techniques by the part of the token budget they affect:
 
 | # | Technique | Input Savings | Output Savings | Quality Impact | Effort | Best For |
 |---|-----------|:------------:|:--------------:|:--------------:|:------:|----------|
@@ -127,7 +127,7 @@ The complete comparison of every technique covered in this guide:
 
 ### The Big Winners
 
-If you do nothing else, do these eight. Ranked by impact-to-effort ratio:
+Start with these techniques, ranked by impact relative to effort:
 
 1. **Caveman-speak** — 30-50% input token savings; combine with B5 for 40-55% output savings
 2. **Precise prompts** — 30-60% savings, just a habit change
@@ -141,7 +141,7 @@ If you do nothing else, do these eight. Ranked by impact-to-effort ratio:
 
 ## 3.4 Quality Impact Assessment
 
-Does compression hurt output quality? The research says: **rarely, and only at extreme levels.**
+Compression becomes less useful when it creates ambiguity. The guide's quality assessment:
 
 | Compression Level | Quality Impact | Evidence |
 |-------------------|---------------|----------|
@@ -151,13 +151,13 @@ Does compression hurt output quality? The research says: **rarely, and only at e
 | Wenyan (Classical Chinese) | Moderate risk | Models understand wenyan less reliably than English |
 | Extreme (single words only) | Significant risk | Ambiguity increases, model may misinterpret |
 
-**The threshold:** When you find yourself re-explaining or getting wrong results, you've compressed too far. Back off one level.
+If you repeatedly need to explain the request again, use a less compressed version.
 
 **Model-specific notes:** All major models (GPT-4, Claude, Gemini) handle caveman-full well. Ultra works for experienced users who know the domain. Wenyan is unreliable for code generation tasks.
 
 ### Diminishing Returns
 
-The savings curve is not linear. The first 30% of compression (dropping filler) is free. The next 20% (fragments, abbreviations) is nearly free. Beyond that, each additional compression point risks quality.
+Cut filler before shortening meaningful instructions. Fragments and abbreviations can save more, but they also make the reader infer more.
 
 ```text
 Savings vs. Quality Risk:
@@ -169,7 +169,7 @@ Risk     ░░░░░░░░░░░░░░░░░░░░░░░�
                lite     full      ultra    extreme
 ```
 
-**Sweet spot: full caveman (30-50% input token savings; 40-55% output savings with terse system instructions).** Maximum return, negligible risk.
+The guide recommends full caveman for technical prompts: **30-50% input token savings**, with **40-55% output savings** when terse system instructions are also set. Use a clearer version if shorthand causes mistakes.
 
 ---
 

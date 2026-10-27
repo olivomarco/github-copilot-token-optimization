@@ -4,13 +4,13 @@
 
 ---
 
-This page exists because model advice in token-optimization discussions gets mixed together too easily. There are **three different pricing views** in play:
+Keep three pricing views separate:
 
 1. **GitHub Copilot public docs** — model availability by plan, Auto behavior, and whatever relative pricing signals GitHub has published
-2. **This repo's UBB framing** — how to think about the June 1, 2026 usage-based billing shift for Business and Enterprise: AI-credit metering and budgets by enterprise, org, cost center, and user
+2. **This repo's UBB framing** — the June 1, 2026 usage-based billing shift for Business and Enterprise: AI-credit metering and budgets by enterprise, org, cost center, and user
 3. **Vendor API pricing** — per-token pricing from providers like Anthropic, where input and output are billed differently
 
-Do **not** treat these as identical units. Use each for the question it actually answers.
+These are different units. Do not compare them as if they were interchangeable.
 
 ## The Official GitHub Docs You Want
 
@@ -18,19 +18,19 @@ Do **not** treat these as identical units. Use each for the question it actually
 - [Requests in GitHub Copilot](https://docs.github.com/en/copilot/concepts/billing/copilot-requests)
 - [Plans for GitHub Copilot](https://docs.github.com/en/copilot/get-started/plans)
 
-Those three pages cover almost everything a practitioner needs today:
+Use these pages to check:
 
 - which models exist
 - which plans include them
 - which models are free vs premium on paid plans
 - which models are currently documented as cheaper or more expensive relative to others
-- what Auto actually does
+- how Auto selects models
 
-One timing point matters for the rest of this page: usage-based billing for Copilot Business and Copilot Enterprise starts on **June 1, 2026**. After that date, AI-credit usage is the main billing lens for Business and Enterprise governance. Any premium-request language below should be read as legacy transition context only.
+The billing cutover date is **June 1, 2026**. For Business and Enterprise after that date, use AI-credit usage for governance. Premium-request references describe the earlier billing model.
 
 ## The Most Important Clarification About Auto
 
-The repo already recommends **Auto** as the default, and that is still directionally right. But the official GitHub docs are more specific than the repo previously was.
+Use **Auto** by default, but understand its limits.
 
 ### What Auto actually does
 
@@ -41,21 +41,19 @@ Per [About Copilot auto model selection](https://docs.github.com/en/copilot/conc
 - On paid plans, Auto in Copilot Chat gets a **10% discount**
 - Auto stays in the supported default pool rather than escalating into every premium model
 
-That last point matters.
-
-> **Practical consequence:** Auto is not "pick any model, including the expensive ones, when needed." It is a low-friction default across the supported Auto set. If you want a higher-cost premium model, you should expect to **pin it manually**.
+Select a higher-cost premium model manually when needed. Auto does not select from every available model.
 
 ## What Question Each Pricing View Answers
 
 | Pricing view | Unit | Best use | Source |
 |---|---|---|---|
 | GitHub public Copilot billing | Model multipliers and, after June 1, AI-credit usage | "What does GitHub currently expose about this model's cost inside Copilot?" | [Requests in GitHub Copilot](https://docs.github.com/en/copilot/concepts/billing/copilot-requests) |
-| Repo UBB framing | AI credits and future usage-based budgets | "How should we think about spend once Business and Enterprise move onto usage-based billing on June 1, 2026?" | [Budgets for metered products](https://docs.github.com/en/billing/how-tos/budgets/setting-up-budgets-to-control-spending-on-metered-products) |
+| Repo UBB framing | AI credits and usage-based budgets | "How should we manage spend after the June 1, 2026 billing cutover?" | [Budgets for metered products](https://docs.github.com/en/billing/how-tos/budgets/setting-up-budgets-to-control-spending-on-metered-products) |
 | Vendor API pricing | Input/output price per MTok | "How do raw tokens differ in value, especially input vs output?" | [Anthropic Pricing](https://platform.claude.com/docs/en/about-claude/pricing) |
 
 ## Where Input vs Output Pricing Fits
 
-The official public GitHub Copilot docs do **not** publish a public table of Copilot input-token price vs output-token price by model. Anthropic's API pricing still gives a clear example of the asymmetry, and it remains useful for intuition. Just do not describe that as today's Copilot billing math.
+Use Anthropic's API prices below to understand input/output price differences, not to calculate a Copilot bill. The GitHub docs cited here do not provide an equivalent Copilot per-model input/output table.
 
 | Model | Input / MTok | Output / MTok |
 |---|---:|---:|
@@ -75,7 +73,7 @@ This is useful for intuition:
 
 Model choice is not the only dial. On supported reasoning-capable models, **thinking effort** or **reasoning effort** changes how much work the model does before answering.
 
-This is already covered in more detail in [Practical Setup](10-practical-setup.md#reasoning-effort-another-lever), but it belongs on this page too because it directly affects spend.
+For setup details, see [Practical Setup](10-practical-setup.md#reasoning-effort-another-lever).
 
 ### What it changes
 
@@ -95,12 +93,12 @@ This is already covered in more detail in [Practical Setup](10-practical-setup.m
 
 > **Use reasoning effort only on models that support it.** Non-reasoning models such as GPT-4.1 and GPT-4o do not expose this control.
 
-So the full decision stack is:
+Choose in this order:
 
 1. choose the right model tier
 2. if the model supports it, choose the lowest reasoning effort that still gets the job done
 
-This is especially relevant when comparing a cheap reasoning-capable model at `medium` effort versus a high-cost premium model at `high` effort. In practice, effort tuning can be a cheaper substitute for jumping to a more expensive model.
+Before moving to a more expensive model, check whether a supported effort setting on the current model meets the task's needs.
 
 ## So What Should You Actually Do?
 
@@ -140,7 +138,7 @@ If you must change the lane or harness (for example cheap/Auto to premium, `medi
 
 ## Org Rollout Rule: Review Before Enablement
 
-For teams, model choice is a governance problem as much as a prompt problem.
+Teams also need model-access policy.
 
 Use [Configuring access to AI models in Copilot](https://docs.github.com/en/copilot/using-github-copilot/ai-models/configuring-access-to-ai-models-in-copilot) to control which AI models are available. GitHub documents that organization owners and enterprise owners can enable or disable access to AI models for members.
 

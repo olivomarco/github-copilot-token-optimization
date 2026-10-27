@@ -4,13 +4,13 @@
 
 ---
 
-Token optimization is not the real goal. The real goal is **more accepted work per token spent**: merged pull requests, closed bugs, passing tests, clean reviews, and fewer wrong-direction agent loops.
+Aim for **more accepted work per token spent**: merged pull requests, closed bugs, passing tests, and fewer rounds of rework.
 
-Raw token minimization can even be the wrong move. A short prompt that causes the agent to guess, edit the wrong files, fail tests, and backtrack is more expensive than a longer plan that gets the first implementation right.
+A short prompt costs more overall if the agent guesses, edits the wrong files, and starts over. A longer plan can be cheaper when it gets the first implementation right.
 
 ## Why Outcome per Token Matters
 
-Usage-based billing makes tokens visible, but engineering teams do not buy tokens. They buy outcomes.
+Judge token spend against completed work.
 
 Tomasz Tunguz describes this as the shift to intelligence per dollar: the application layer competes on the cost of a closed ticket, shipped PR, or resolved support case, not the cheapest raw token.[^tunguz] That maps directly to Copilot work. The useful metric is:
 
@@ -32,11 +32,9 @@ For agentic coding, cost behaves differently than in simple chat. The Microsoft/
 | Models underestimate their own token use | Do not trust an agent's pre-task cost guess; use budgets and stop rules |
 | Token efficiency varies by model independent of pass rate | Compare outcome and cost together, not benchmark score alone |
 
-The implication is simple: optimize the loop, not the sentence.
-
 ## The Outcome-per-Token Loop
 
-High outcome per token comes from six habits:
+Use these habits to reduce wasted work:
 
 ![Outcome-per-token loop: pick the task shape, plan before code, route the model, target context, verify evidence, and close cleanly.](assets/diagrams/outcome-per-token-loop.svg)
 
@@ -46,13 +44,11 @@ High outcome per token comes from six habits:
 4. preserve clean context and cache boundaries
 5. verify before claiming done
 
-Low outcome per token usually has the opposite shape: vague prompt, huge context, expensive model pinned too long, no acceptance criteria, agent edits before planning, tests run late, then a rework session starts from scratch.
+Watch for vague prompts, oversized context, expensive models left selected, missing acceptance criteria, and tests run only after extensive edits. These patterns make rework harder to avoid.
 
 ## Prompt Skills as Superpowers
 
-The community project [`obra/superpowers`](https://github.com/obra/superpowers) popularizes a useful framing: treat repeatable agent practices as skills, not one-off prompts.[^superpowers] It is not an official GitHub product, but its skill categories map well to Copilot cost control.
-
-This chapter uses that idea as a practical taxonomy.
+The community project [`obra/superpowers`](https://github.com/obra/superpowers) packages repeatable agent practices as skills.[^superpowers] It is not an official GitHub product. This chapter uses its approach to organize practices that can reduce rework:
 
 | Skill | What it does | Token effect |
 |---|---|---|
@@ -67,7 +63,7 @@ The skills below are patterns. The public libraries that follow are example impl
 
 ## Skill Libraries Worth Borrowing From
 
-Community skill libraries can improve outcome per token when they make the next agent action more precise: clearer requirements, safer tool use, better tests, cleaner handoff, or stronger final review. Treat them as reusable practice, not official GitHub or Microsoft guidance. Most claims are qualitative and experience-based; use them because they encode good workflow discipline, not because they prove a universal benchmark gain.
+Borrow skills that clarify requirements, tool use, tests, handoffs, or review. These are community libraries, not official GitHub or Microsoft guidance. Their benefits are mostly qualitative and experience-based, not proof of universal token savings.
 
 | Library | Best borrowed skill | Use when | Caveat |
 |---|---|---|---|
@@ -83,11 +79,11 @@ Community skill libraries can improve outcome per token when they make the next 
 
 [![Skill library Star History Chart](https://api.star-history.com/svg?repos=obra/superpowers,softaworks/agent-toolkit,catpilotai/catpilot-ai-guardrails,vercel-labs/agent-browser,vercel-labs/writing-guidelines,mattpocock/skills,PramodDutta/qaskills&type=timeline)](https://www.star-history.com/#obra/superpowers&softaworks/agent-toolkit&catpilotai/catpilot-ai-guardrails&vercel-labs/agent-browser&vercel-labs/writing-guidelines&mattpocock/skills&PramodDutta/qaskills&timeline)
 
-Star history is an adoption signal, not a quality benchmark. Use it to understand community attention, then judge each library by whether it changes the next agent action.
+Stars show community attention, not quality. Judge a skill by whether it improves the next action.
 
 ### `obra/superpowers`: Baseline Agent SDLC Discipline
 
-Use Superpowers as the reference pattern: skills are small, named operating procedures. The value is not the brand name; the value is turning "be careful" into concrete moves the agent can follow.[^superpowers]
+Superpowers turns general advice such as "be careful" into named procedures the agent can follow.[^superpowers]
 
 - Borrow the TDD, planning, verification, and branch-finish habits.
 - Convert team norms into small reusable prompts or skill files.
@@ -96,7 +92,7 @@ Use Superpowers as the reference pattern: skills are small, named operating proc
 
 ### `softaworks/agent-toolkit`: Planning, Handoff, and Entropy Control
 
-`agent-toolkit` is a broad personal toolkit with skills, subagents, and commands for Claude-style agent workflows.[^agent-toolkit] Its best fit here is not copying everything; it is borrowing the structure for long-running engineering work.
+`agent-toolkit` contains skills, subagents, and commands for Claude-style workflows.[^agent-toolkit] Borrow its planning and handoff patterns for long-running work rather than installing everything.
 
 - Use `gepetto`-style flow for complex features: research, stakeholder questions, spec, plan, review, then execution.
 - Use `requirements-clarity` before coding when the task still has hidden ambiguity.
@@ -106,7 +102,7 @@ Use Superpowers as the reference pattern: skills are small, named operating proc
 
 ### `catpilot-ai-guardrails`: Risk Stops Before Expensive Mistakes
 
-Guardrail skills improve outcome per token by preventing costly wrong actions: leaked secrets, unsafe cloud mutations, database damage, supply-chain drift, or retry loops.[^catpilot-guardrails] They are especially relevant when the agent has write-capable tools.
+Guardrail skills address secret leaks, unsafe cloud changes, database damage, supply-chain drift, and retry loops.[^catpilot-guardrails] Use them when those risks are part of the task, especially with write-capable tools.
 
 - Add guardrails before tasks that touch credentials, PII, cloud CLIs, databases, Docker, CI, or dependency manifests.
 - Require explicit confirmation before destructive or high-cost actions.
@@ -116,7 +112,7 @@ Guardrail skills improve outcome per token by preventing costly wrong actions: l
 
 ### `agent-browser`: Browser QA Without DOM Floods
 
-`agent-browser` is useful because it teaches browser agents to use compact observations and evidence-oriented waits instead of dumping huge HTML or guessing from screenshots.[^agent-browser]
+`agent-browser` guides agents toward compact page snapshots and waits tied to observable state, rather than large HTML dumps or screenshot guesses.[^agent-browser]
 
 - Prefer accessibility-tree snapshots and stable element references over raw DOM dumps.
 - Re-snapshot after page-changing actions; browser references go stale.
@@ -126,7 +122,7 @@ Guardrail skills improve outcome per token by preventing costly wrong actions: l
 
 ### `writing-guidelines`: Make the Plan the Prompt, Spec, and Review Artifact
 
-Vercel's writing guidance is useful for engineering agents because it turns vague prose into testable artifacts.[^writing-guidelines] Better writing reduces rework tokens: fewer hidden goals, fewer vague success criteria, fewer review comments asking what changed.
+Vercel's writing guidance focuses on explicit goals and testable success criteria.[^writing-guidelines] Use it to clarify specs, implementation prompts, and PR descriptions before they create review questions.
 
 - Write goals with testable verbs, not vague aspirations.
 - Keep one page or prompt focused on one job.
@@ -136,7 +132,7 @@ Vercel's writing guidance is useful for engineering agents because it turns vagu
 
 ### `mattpocock/skills`: Engineering Loops That Reduce Guessing
 
-Matt Pocock's skills are useful because they encode engineering loops: TDD, bug diagnosis, code review axes, domain modeling, and large-work decomposition.[^mattpocock-skills] They are strongest when the agent would otherwise jump straight from symptom to edit.
+Matt Pocock's skills cover TDD, bug diagnosis, code review, domain modeling, and work decomposition.[^mattpocock-skills] Use them when the agent would otherwise jump from a symptom straight to an edit.
 
 - Use TDD skills to agree on seams before implementation.
 - Use bug-diagnosis skills to build a fast, deterministic red/green loop before theorizing.
@@ -146,7 +142,7 @@ Matt Pocock's skills are useful because they encode engineering loops: TDD, bug 
 
 ### `qaskills`: QA Depth on Demand
 
-`qaskills` is a QA skill catalog with CLI, MCP server, catalog, SDK, and validator.[^qaskills] Its token value is specialization: load QA depth when the task is actually QA-heavy instead of asking a general agent to invent a test strategy from scratch.
+`qaskills` provides a QA catalog, CLI, MCP server, SDK, and validator.[^qaskills] Load its testing guidance when the task needs that depth.
 
 - Use Playwright skills for page-object discipline, accessibility-first selectors, fixtures, and anti-pattern checks.
 - Use test-plan skills for risk matrices, traceability, equivalence partitioning, and entry/exit criteria.
@@ -156,7 +152,7 @@ Matt Pocock's skills are useful because they encode engineering loops: TDD, bug 
 
 ### Do Not Install Every Skill
 
-Skills are context too. Install only the ones that change the next agent action.
+Loaded skills add context. Choose them for the current task.
 
 | Task | Load |
 |---|---|
@@ -166,11 +162,11 @@ Skills are context too. Install only the ones that change the next agent action.
 | Specs, docs, PR descriptions | Writing and review skills |
 | Long sessions, complex features, handoff | Planning and handoff skills |
 
-If a skill is not likely to change the next edit, command, test, or review, leave it out. The best skill selection is still context selection.
+Leave out skills that will not change the next edit, command, test, or review.
 
 ### Do Not Over-Optimize the Skill Stack
 
-Skill research can become its own token sink. Chasing the perfect library, the perfect subagent, or the "best of the best" workflow often produces no shipped work. The practical ceiling arrives early: a clear plan plus one hard challenge pass is already strong for most tasks.
+Do not let skill selection delay the work. For most tasks, start with a clear plan and one review of its assumptions.
 
 Use a simple `plan + grill-me` loop before adding more machinery:
 
@@ -190,7 +186,7 @@ For each: files likely touched, risks, test strategy, and token/cost risk.
 Do not edit files.
 ```
 
-This spends a small number of reasoning tokens to avoid a much larger rework loop.
+Compare approaches before committing to one that may need to be undone.
 
 ### Planning Skill
 
@@ -220,8 +216,6 @@ Before asking an agent to modify code:
 
 If tests start red and the agent does not know that, it spends tokens debugging pre-existing failures. If tests go red during the task and the agent keeps editing, it compounds uncertainty.
 
-Green baseline first. Then change.
-
 ### Verification-before-Completion Skill
 
 Do not accept "done" without evidence.
@@ -231,11 +225,11 @@ Before you report completion, run the targeted tests or build,
 state the exact command, and confirm each acceptance criterion.
 ```
 
-This costs a little at the end. It saves a lot when it prevents false completion, review churn, and a second agent session.
+Verification helps catch incomplete work before review or another agent session.
 
 ### Impeccable Close Skill
 
-"Impeccable close" is this guide's label for closing the loop cleanly. The term is not an official Copilot concept; the practice is the important part.
+"Impeccable close" is this guide's label, not an official Copilot concept.
 
 A good close includes:
 
@@ -246,7 +240,7 @@ A good close includes:
 5. PR summary matches the actual diff
 6. next step named only if one is truly needed
 
-This is outcome-per-token discipline. A sloppy close moves cost from implementation into review, follow-up prompts, and hotfixes.
+A clear close reduces the need to reconstruct what changed during review and follow-up work.
 
 ### Branch-Close Discipline
 
@@ -281,7 +275,7 @@ GitHub's official tutorial separates work into three model lanes.[^optimize-ai]
 | Mid-tier models | Clear plans that need efficient implementation | Use for execution once ambiguity is removed |
 | Lighter models | Refactoring, formatting, documentation, routine scoped changes | Use for bounded mechanical work |
 
-Do not pay for frontier reasoning after the hard thinking is already captured in the plan.
+Use a cheaper execution model when the saved plan removes the need for further difficult reasoning.
 
 ## Day-to-Day Model Guidance
 
@@ -350,11 +344,9 @@ Use benchmark numbers with labels:
 - **Directional**: aggregator or secondary source.
 - **Anecdotal**: Reddit, Discord, social media, single-session reports.
 
-The Reddit post that motivated this chapter is useful as a hypothesis generator: it highlights a real practitioner pattern around Pareto frontiers, DeepSWE cost-per-task, and GPT-5.6 tier routing. Do not treat its exact cost/task ladder as stable guide data unless rechecked against current DeepSWE, Artificial Analysis, and official Copilot pricing.
-
 ## Why Harness Matters
 
-A model score is rarely just a model score. It includes:
+Benchmark scores depend on the setup as well as the model:
 
 - agent scaffold
 - tool access
@@ -383,12 +375,6 @@ Before starting an expensive agent session:
 8. **Will a model switch invalidate cache?** If yes, start fresh instead.
 9. **Is the model policy allowed for this org/customer?** Check admin and compliance constraints.
 10. **Will the close be clean?** Require test evidence and a concise summary.
-
-## What Not to Include Yet: Govify
-
-The name "Govify" appears to refer to multiple unrelated things: a local-government HR/recruiting SaaS, an old OpenGov Foundation PDF converter, and a cloud rewrite of that converter. Research found no verified connection to GitHub Copilot, token optimization, AI developer governance, or outcome-per-token workflows.
-
-Do not use Govify as a case study in this guide unless a primary source is provided. A weak mention would create confusion rather than value.
 
 ## Cross-References
 
