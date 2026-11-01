@@ -24,8 +24,6 @@ Community guidance, not official GitHub or Microsoft policy.
 | Organization budgets and access | [Enterprise Governance](12-enterprise-governance.md) |
 | Evidence and comparisons | [Comparisons & Data](09-comparisons-data.md) |
 
-Use [Practical Setup](10-practical-setup.md) to apply these choices. It links to each topic's detailed home.
-
 ## Start concise; test stronger style rules
 
 Ordinary concise language is the default. Caveman remains an option, but shorter narration does not guarantee a cheaper agent task. Read the [scoped evidence and three-arm comparison](05-output-control.md#caveman-optional-output-style) before adopting it for cost savings.

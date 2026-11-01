@@ -8,11 +8,7 @@ Control Copilot spend with documented organization and enterprise controls.
 
 ## What Actually Controls Spend
 
-Start with:
-
-1. budget ceilings
-2. user-level budget control
-3. model availability
+Start with organization budgets, user-level budgets, and model availability.
 
 Prompt compression still matters, but it is a usage-efficiency lever. It is not an admin billing control.
 
@@ -45,7 +41,7 @@ Practical default:
 
 ## 2. Use User-Level Budgets for Per-User Tightening
 
-For Business and Enterprise after June 1, the clean per-user cap is the **user-level AI credit budget** documented in GitHub's [usage-based billing guidance](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises). GitHub's docs explicitly say a user-level budget of **$0** means that user gets no access to usage-based features.
+Use **user-level AI credit budgets** for per-user limits under GitHub's [usage-based billing guidance](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises). A **$0** budget blocks usage-based features, so treat it as an access decision.
 
 Review model choice, chat depth, and agent duration alongside each user's AI-credit budget.
 
@@ -66,13 +62,7 @@ Build cohorts from actual spend, not guesswork:
 
 Use these cohorts to match budgets to actual work. Agent-heavy users may need more headroom; inactive or low-value usage needs review before it consumes pooled credits.
 
-Post-June 1 admin tips:
-
-1. watch long chat and agent sessions because repeated turns now accumulate AI-credit cost directly
-2. monitor user-level budgets closely because **$0** removes access to usage-based features
-3. remember code completions and next edit suggestions are not billed in AI credits, so do not treat all Copilot activity as equal cost
-4. review model choice regularly because chat-style interactions now consume AI credits based on model and tokens
-5. keep terse repo instructions in IDE workflows because lower output volume still reduces AI-credit burn even when billing moves off request counts
+Review long chat and agent sessions first: repeated turns accumulate AI-credit cost. Code completions and next edit suggestions are not billed in AI credits. Concise instructions can reduce output, but judge their effect on total cost and completed work.
 
 ## 3. Review Models Before You Enable Them
 
@@ -80,7 +70,7 @@ Use [Configuring access to AI models in Copilot](https://docs.github.com/en/copi
 
 GitHub documents that organization owners and enterprise owners can enable or disable access to AI models for members. Treat that as the supported model-governance control.
 
-That is not the same thing as finely tuned per-user model toggles inside one org. For different org-level model policies or separate billing boundaries, separate organizations can still be useful. Use that only when the boundary is worth the overhead.
+These are org/enterprise controls, not arbitrary per-user model toggles. Section 5 covers separate organizations when different policy or billing boundaries are needed.
 
 Practical review checklist:
 
@@ -112,7 +102,7 @@ Practical split:
 - repo instructions: concrete coding, build, and terseness rules that must apply in IDE workflows
 - path-specific instructions: narrow local rules where extra context pays for itself
 
-## 5. Separate Orgs Can Work, but Treat It as a Caveated Workaround
+## 5. Weigh separate organizations against their overhead
 
 Separate organizations can support different model policies or billing boundaries when user groups already align with org structure. Weigh that separation against:
 
@@ -134,27 +124,11 @@ Use GitHub usage reports and AI-credit reporting from the billing docs above. As
 
 Supplemental benchmarking can help when comparing model quality and price posture. [llm-stats.com](https://llm-stats.com/) is useful as an independent reference point. Treat it as supplemental benchmarking, **not** official GitHub guidance and **not** a substitute for your own Copilot usage reports.
 
-## 7. June 1 Cutover Checklist
-
-For the June 1, 2026 billing model:
-
-1. move admin guidance from request counters to AI-credit budgets
-2. build spend cohorts from historical CSVs before assigning user-level or pooled budgets
-3. decide which users need tight user-level budgets and which teams can share a broader pooled budget
-4. review model availability before frontier models become direct AI-credit spend
-5. remind teams that code completions and next edit suggestions stay outside AI-credit billing
-6. watch long chat and agent workflows first because they become the fastest spend amplifiers
-
 ## Recommended Enterprise Default
 
-1. use Auto as the default model path
-2. set budgets before broad rollout
-3. segment users into spend cohorts from historical CSVs, then tune budget defaults by cohort
-4. use user-level AI credit budgets when you need tighter per-user control
-5. consider FinOps-as-code automation when manual cost-center and budget edits become risky
-6. review premium models before enablement
-7. keep repo instructions small so IDE workflows inherit the right defaults
-8. use separate org segmentation only if cost-center boundaries already support it
+Start with Auto, budgets set before rollout, and small repository instructions. Use historical spend to tune user-level budgets, then expand model access only where outcomes justify it.
+
+Add budget automation or separate organizations only when manual management or existing policy boundaries warrant the overhead.
 
 ---
 

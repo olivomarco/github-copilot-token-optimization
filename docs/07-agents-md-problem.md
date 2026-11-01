@@ -23,7 +23,7 @@ In these settings, generated context files increased cost without improving aver
 
 ## 2.6.2 Human-Written Files: Marginal at Best
 
-Human-written context files performed slightly better — but not consistently:
+Human-written context files showed a small, inconsistent average improvement:
 
 | Model | Effect of Human-Written Context File |
 |-------|--------------------------------------|
@@ -31,11 +31,9 @@ Human-written context files performed slightly better — but not consistently:
 | Claude Code | **Worse** with human-written context |
 | File discovery rates | Identical with or without context files |
 
-File discovery rates were unchanged: agents could find the relevant files without the context file.
-
 ## 2.6.3 Why More Context Hurts
 
-Four mechanisms explain the findings:
+Four mechanisms can help explain the findings:
 
 **1. Redundancy.** A context file may repeat facts already available in `package.json`, imports, and the directory structure. The agent processes the same information twice.
 
@@ -43,7 +41,7 @@ Four mechanisms explain the findings:
 
 **3. Anchoring.** Agents can follow outdated guidance too closely. Mentioning a tool in `AGENTS.md` increased its use **1.6x**, even when another tool better suited the task.
 
-**4. Signal-to-noise ratio.** Every token of context competes for the model's attention. Low-value context (routine facts like "this project uses TypeScript" when `tsconfig.json` exists) dilutes the high-value context (project-specific cautions like "don't refactor the auth module — it has a pending security audit").
+**4. Signal-to-noise ratio.** Routine facts such as "this project uses TypeScript" add little when `tsconfig.json` already establishes that. They can obscure cautions the agent cannot discover, such as a pending audit that rules out refactoring auth.
 
 ## 2.6.4 The Counterpoint: Efficiency vs. Correctness
 

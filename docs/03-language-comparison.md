@@ -23,15 +23,15 @@ In this sample, Chinese uses 8 characters and English uses 16, but Chinese costs
 
 ## 2.2.2 Why This Happens
 
-BPE tokenizers are trained on data that is majority English. English text gets the best compression ratios because:
+BPE compression depends on the tokenizer's training data. English-heavy data can favor English text:
 
 1. **Common English words → 1 token.** The tokenizer has dedicated entries for them
-2. **CJK characters → ~1-1.4 tokens each** (not 2-3 as commonly claimed). Each CJK character is 3 UTF-8 bytes, and those byte sequences are less frequent in training data. That's still ~5-7x more expensive *per character* than English (~0.2 tokens/char), which is why 8 Chinese characters cost 11 tokens while 16 English characters cost only 5
-3. **Non-Latin alphabets (Cyrillic, Hebrew, Arabic)** fare even worse — 2.5-3.2x English
+2. **CJK text can use more tokens per character.** In the example above, 8 Chinese characters use 11 tokens; 16 English characters use 5. Character count alone misses that difference.
+3. **Non-Latin scripts can also use more tokens.** The Russian and Hebrew examples cost 2.8x and 3.2x the English example.
 
 ## 2.2.3 Large-Scale Data
 
-Across larger text samples (Capodieci/Castillo research):
+Reported larger-sample comparisons (Capodieci/Castillo research):
 
 | Language | Avg Token Cost vs. English | Characters per Token |
 |----------|---------------------------|---------------------|
@@ -55,21 +55,19 @@ Classical Chinese can express the same idea in fewer characters than modern Chin
 | Wenyan-full | "池reuse conn。skip handshake → fast。" | ~15 |
 | Wenyan-ultra | "池reuse conn。skip→fast。" | ~12 |
 
-At best, wenyan-ultra ties with terse English. At worst, it costs more. And the model understands English better because its training data is English-dominated.
+In these illustrative counts, wenyan-ultra ties with terse English, while the longer version costs more. This does not establish a general token or comprehension advantage.
 
-Use wenyan for creative or educational work, not to save tokens. This guide recommends terse English for token optimization.
+Use wenyan when the task calls for it, not on the assumption that fewer characters save tokens.
 
 ## 2.2.5 Practical Takeaways
 
-1. **Always use English** for prompts and instructions. It's 1.5-3x more efficient than any other language
-2. **Don't Google Translate your prompts** into CJK languages hoping to save tokens — you'll spend more
-3. **If you're bilingual**, you might write more concisely in your native language, but the token cost will be higher
-4. **Code output stays English** regardless of prompt language — variable names, comments, docs will be in English
-5. **Transliteration helps** for non-Latin scripts — writing Russian in Latin characters cuts tokens ~50%
+Use the language that makes requirements clear. English uses fewer tokens in the reported comparisons, but these samples do not establish a universal advantage for every prompt or tokenizer.
+
+Do not translate to CJK solely because it uses fewer characters. If language choice matters to cost, compare equivalent prompts with the target tokenizer. Keep code identifiers and required output language explicit.
 
 ### The Transliteration Effect
 
-Converting non-Latin scripts to Latin characters helps:
+Transliteration reduces token counts in these two examples, by 21% and 44%. It is not a general 50% saving and may make text harder to read:
 
 | Script | Sentence | Tokens | vs. Native |
 |--------|----------|--------|-----------|

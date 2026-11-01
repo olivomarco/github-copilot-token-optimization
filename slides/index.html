@@ -282,7 +282,7 @@
             <ol start="6">
               <li><strong>Scope context with <code>applyTo</code></strong>.</li>
               <li><strong>Write precise prompts</strong>: target file, function, done condition.</li>
-              <li><strong>Retune prompts to target model</strong>.</li>
+              <li><strong>Retune prompts when model behavior changes</strong>.</li>
               <li><strong>Audit MCP servers</strong>.</li>
               <li><strong>Convert rich files to Markdown first</strong>.</li>
             </ol>
@@ -329,7 +329,7 @@
             <div class="card lab">
               <h3>Goal</h3>
               <p>Identify your top 3 token leaks before learning techniques.</p>
-              <p><strong>Do:</strong> mark each as green/yellow/red: output verbosity, instruction size, open tabs, Agent use, MCP count, model pinning, long chat history.</p>
+              <p><strong>Do:</strong> mark each as green/yellow/red: output verbosity, loaded instructions, open tabs, Agent use, loaded tools, model pinning, long chat history.</p>
               <p><strong>Deliverable:</strong> personal baseline + one "fix today" action.</p>
               <p><strong>Time:</strong> 10 minutes.</p>
             </div>
@@ -389,7 +389,7 @@
               </div>
               <div class="card">
                 <h3>Compounding</h3>
-                <p>Every step reloads baseline context and adds previous tool results.</p>
+                <p>Later steps carry retained context and tool results. Caching and compaction affect the cost.</p>
               </div>
             </div>
           </section>
@@ -468,7 +468,7 @@ Validate:
 400 on validation fail
 201 on success, return created user
 Save to DB</code></pre>
-            <p class="small">Bullets and key-value pairs force clarity and reduce filler.</p>
+            <p class="small">Bullets and key-value pairs make distinct requirements easier to check.</p>
           </section>
 
           <section>
@@ -476,7 +476,7 @@ Save to DB</code></pre>
             <div class="grid">
               <div class="card">
                 <h3>Natural language</h3>
-                <p>Create a function that takes numbers, filters negative values, doubles remaining values, returns sum.</p>
+                <p>Keep positive numbers, double them, and return their sum.</p>
               </div>
               <div class="card">
                 <h3>Code-centric</h3>
@@ -501,9 +501,9 @@ Save to DB</code></pre>
             <h2>Lab 2: prompt compression ladder</h2>
             <div class="card lab">
               <h3>Goal</h3>
-              <p>Rewrite one real prompt three ways: lite, full, ultra.</p>
+              <p>Compare concise prose, fragments, and shorthand for one real prompt.</p>
               <p><strong>Do:</strong> preserve file names, line numbers, constraints, done condition. Drop only fluff.</p>
-              <p><strong>Compare:</strong> which version is shortest without adding ambiguity?</p>
+              <p><strong>Compare:</strong> which version makes the task easiest to understand without losing requirements?</p>
               <p><strong>Time:</strong> 20 minutes.</p>
             </div>
           </section>
@@ -519,7 +519,7 @@ Bug: null user causes .email crash.
 Fix: null guard before .email.
 Test: add null-user case.
 Done: targeted test passes.</code></pre>
-              <p><strong>Run:</strong> ask Copilot with A, then B. Compare file reads, clarifications, output length.</p>
+              <p><strong>Run:</strong> use separate sessions for A and B. Compare file reads, clarifications, and results. B adds requirements, so this tests specificity, not compression alone.</p>
             </div>
           </section>
         </section>
@@ -558,9 +558,9 @@ Done: targeted test passes.</code></pre>
           <section>
             <h2>Practical rule</h2>
             <div class="quote">
-              Use terse English for prompts and instructions. Do not translate to CJK to save tokens.
+              Use the language that makes requirements clear. Fewer characters do not guarantee fewer tokens.
             </div>
-            <p class="small">If you express requirements more clearly in your native language, that clarity can outweigh the token savings.</p>
+            <p class="small">English uses fewer tokens in these examples. Test equivalent prompts with the target tokenizer before generalizing.</p>
           </section>
 
           <section>
@@ -569,7 +569,7 @@ Done: targeted test passes.</code></pre>
               <h3>Goal</h3>
               <p>Disprove or confirm language assumptions with actual token counts.</p>
               <p><strong>Do:</strong> pick one prompt. Translate to your strongest non-English language. Compare token counts in tokenizer tool.</p>
-              <p><strong>Deliverable:</strong> team language guidance: when English is required, when native language is OK.</p>
+              <p><strong>Deliverable:</strong> measured token counts and any clarity tradeoffs.</p>
               <p><strong>Time:</strong> 20 minutes.</p>
             </div>
           </section>
@@ -600,7 +600,7 @@ Done: targeted test passes.</code></pre>
               <li>Close files not relevant to current task.</li>
               <li>Keep files focused and small.</li>
               <li>Ignore build output, vendor dirs, generated files.</li>
-              <li>Use Content Exclusion for sensitive paths in Business/Enterprise.</li>
+              <li>Use Content Exclusion for sensitive paths on supported Business/Enterprise surfaces.</li>
               <li>Start fresh conversations after topic changes.</li>
             </ul>
           </section>
@@ -642,7 +642,7 @@ API conventions:
             <div class="card enterprise">
               <h3>Customer-side action</h3>
               <p>Configure Content Exclusion for sensitive files, generated bundles, large data files, and regulated paths.</p>
-              <p><strong>Important:</strong> treat this as privacy/policy control first, token-saving side effect second. Check current surface support in official docs.</p>
+              <p><strong>Important:</strong> this is a privacy/policy control, not a general token setting. It does not apply to Copilot CLI, cloud agent, or IDE Agent mode. Check current official support.</p>
             </div>
           </section>
 
@@ -668,7 +668,7 @@ API conventions:
           <section>
             <h2>Task-specific code output</h2>
             <pre><code class="language-text">Code only, no explanation.</code></pre>
-            <p>Best for generation tasks when team already understands desired change.</p>
+            <p>Use when the team understands the change. Keep errors, missing requirements, and failed checks visible.</p>
           </section>
 
           <section>
@@ -865,9 +865,9 @@ Root cause fixed -> delete that line.</code></pre>
             <h2>Lab 10: landmine pruning</h2>
             <div class="card lab">
               <h3>Goal</h3>
-              <p>Cut context without losing correctness.</p>
+              <p>Remove unnecessary context; check that needed guidance remains.</p>
               <p><strong>Do:</strong> mark each instruction as discoverable, style, landmine, stale, duplicate. Delete or scope everything except true always-on landmines.</p>
-              <p><strong>Deliverable:</strong> 10-line max instruction file draft.</p>
+              <p><strong>Deliverable:</strong> a pruned instruction draft with necessary rules intact.</p>
               <p><strong>Time:</strong> 35 minutes.</p>
             </div>
           </section>
@@ -969,7 +969,7 @@ x 200 tokens/tool
             <div class="card lab">
               <h3>Goal</h3>
               <p>Remove hidden schema overhead.</p>
-              <p><strong>Do:</strong> inventory enabled MCP servers, tool counts, global vs workspace scope, owner, frequency of use.</p>
+              <p><strong>Do:</strong> inspect loaded definitions and metadata, enabled servers, global vs workspace scope, owner, and frequency of use.</p>
               <p><strong>Deliverable:</strong> keep/disable/scope table + restart plan.</p>
               <p><strong>Time:</strong> 30 minutes.</p>
             </div>
@@ -1074,7 +1074,7 @@ steps:
     run: npm ci
   - name: Build
     run: npm run build</code></pre>
-            <p class="small">Prevents discovery by trial and error. Saves agent steps.</p>
+            <p class="small">Illustrative steps, not a complete workflow file. Deterministic setup can avoid repeated dependency discovery.</p>
           </section>
 
           <section>
@@ -1129,7 +1129,7 @@ repo instructions</code></pre>
             <div class="card lab">
               <h3>Goal</h3>
               <p>Create a repo-ready token optimization PR draft.</p>
-              <p><strong>Do:</strong> draft <code>copilot-instructions.md</code>, one scoped instruction file, one Coding Agent setup step, one issue template snippet.</p>
+              <p><strong>Do:</strong> draft the changes your repo needs: <code>copilot-instructions.md</code>, scoped guidance, Coding Agent setup, or a precise issue snippet. Skip artifacts already adequate.</p>
               <p><strong>Deliverable:</strong> branch or patch proposal.</p>
               <p><strong>Time:</strong> 45 minutes.</p>
             </div>
@@ -1277,7 +1277,7 @@ repo instructions</code></pre>
             <ol>
               <li>Move from request counters to AI-credit budgets.</li>
               <li>Decide pooled vs user-level budgets.</li>
-              <li>Review model availability before premium becomes direct spend.</li>
+              <li>Review model access against current rates and delivered value.</li>
               <li>Remind teams completions/next edits stay outside AI-credit billing.</li>
               <li>Watch long chat and agent workflows first.</li>
             </ol>
@@ -1341,7 +1341,7 @@ repo instructions</code></pre>
           <section>
             <h2>Skills as practices</h2>
             <table>
-              <thead><tr><th>Skill</th><th>Token effect</th></tr></thead>
+              <thead><tr><th>Skill</th><th>Potential benefit</th></tr></thead>
               <tbody>
                 <tr><td>Brainstorming</td><td>Prevents early lock-in</td></tr>
                 <tr><td>Planning</td><td>Reduces guessing during execution</td></tr>
@@ -1507,7 +1507,7 @@ repo instructions</code></pre>
         `,
         "Skills as practices": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Explain skills as reusable operating procedures. They save tokens when they change the next action or prevent a bad action.</p>
+          <p>Skills provide reusable guidance. They may reduce rework, but a changed action alone does not prove savings.</p>
         `,
         "Skill libraries: borrow patterns": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1519,7 +1519,7 @@ repo instructions</code></pre>
         `,
         "Plan first, execute cheaply": `
           <p><strong>Timing:</strong> 5 min.</p>
-          <p>Planning is where premium reasoning earns its keep. Once steps and acceptance criteria are written, execution can often use a cheaper lane.</p>
+          <p>Use stronger reasoning where design decisions warrant it. A concrete plan may let a cheaper model execute reliably; verify the result.</p>
           <p>Stress fresh sessions when changing model/tool/agent lane.</p>
         `,
         "Day-to-day model guidance": `
@@ -1544,11 +1544,11 @@ repo instructions</code></pre>
         `,
         "Agent mode cost loop": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Every avoided agent step saves a full context replay. Use precise prompts and plans to reduce the loop.</p>
+          <p>Avoided steps can reduce context replay. Caching, compaction, and changed behavior affect savings.</p>
         `,
         "Session harness checklist": `
           <p><strong>Timing:</strong> 3 min.</p>
-          <p>Have participants choose this before long work starts. Mid-session churn breaks cache and muddies measurement.</p>
+          <p>Choose the setup before long work. Mid-session changes can affect cache reuse and make comparisons harder.</p>
         `,
         "Workshop outcome": `
           <p><strong>Timing:</strong> 2 min.</p>
@@ -1558,7 +1558,6 @@ repo instructions</code></pre>
         "Important framing": `
           <p><strong>Timing:</strong> 2 min.</p>
           <p>Say plainly: community/field guide, not official GitHub/Microsoft policy. For billing/admin controls, defer to docs.github.com.</p>
-          <p>This protects credibility with enterprise customers.</p>
         `,
         "8 hour agenda": `
           <p><strong>Timing:</strong> 3 min.</p>
@@ -1571,8 +1570,7 @@ repo instructions</code></pre>
         `,
         "14 things to do right now": `
           <p><strong>Timing:</strong> 2 min.</p>
-          <p>Frame as executive summary. If customer only implements one page, implement this one.</p>
-          <p>Emphasize order: output, always-on context, mode/model/tool routing, then outcome discipline.</p>
+          <p>Use as a menu, not fourteen prerequisites. Start with the source of waste the customer can identify.</p>
         `,
         "Fastest wins": `
           <p><strong>Timing:</strong> 3 min.</p>
@@ -1608,7 +1606,7 @@ repo instructions</code></pre>
         "Cost model": `
           <p><strong>Timing:</strong> 5 min.</p>
           <p>Explain three buckets. Vendor pricing illustrates output/input asymmetry; do not claim exact Copilot public per-token table unless docs publish it.</p>
-          <p>Key takeaway: output control is disproportionately valuable.</p>
+          <p>Check which billed token bucket dominates the task before choosing an intervention.</p>
         `,
         "Input is bigger than your prompt": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1626,7 +1624,7 @@ repo instructions</code></pre>
         `,
         "Prompt compression": `
           <p><strong>Timing:</strong> 2 min.</p>
-          <p>Set rule: compression is not dumbing down. Technical substance stays exact. Only fluff dies.</p>
+          <p>Remove unnecessary wording. Preserve technical terms, conditions, and the information needed to act.</p>
         `,
         "Optional shorthand": `
           <p><strong>Timing:</strong> 5 min.</p>
@@ -1651,12 +1649,12 @@ repo instructions</code></pre>
         `,
         "Guardrails as invariants": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Declarative invariants are easier for models to satisfy and easier for humans to review.</p>
+          <p>State required outcomes when order does not matter. Keep ordered steps when sequence changes behavior.</p>
           <p>Use this for instruction files too.</p>
         `,
         "Lab 2: prompt compression ladder": `
           <p><strong>Timing:</strong> 20 min lab + 5 min share-out.</p>
-          <p>Pair people. One rewrites; other checks for lost meaning. Winning prompt is shortest one that remains unambiguous.</p>
+          <p>Pair participants: one rewrites, one checks for lost meaning. Prefer the version that makes the task clear, not automatically the shortest.</p>
         `,
         "Lab 3: prompt A/B": `
           <p><strong>Timing:</strong> 20 min.</p>
@@ -1676,11 +1674,11 @@ repo instructions</code></pre>
         `,
         "Practical rule": `
           <p><strong>Timing:</strong> 3 min.</p>
-          <p>For token optimization, use terse English. If native language yields much better requirement clarity, quality can trump savings.</p>
+          <p>English uses fewer tokens in the shown samples, not necessarily every prompt. Preserve requirement clarity and compare equivalent text.</p>
         `,
         "Lab 4: tokenizer reality check": `
           <p><strong>Timing:</strong> 20 min.</p>
-          <p>Have multilingual participants test actual prompts. Capture surprising results. End with local team policy, not universal moralizing.</p>
+          <p>Compare equivalent prompts and record the tokenizer. Keep conclusions limited to the tested examples.</p>
         `,
         "Context management": `
           <p><strong>Timing:</strong> 2 min.</p>
@@ -1739,7 +1737,7 @@ repo instructions</code></pre>
         `,
         "Lab 6: output A/B": `
           <p><strong>Timing:</strong> 15 min.</p>
-          <p>Participants should compare response length and usefulness. Do not score by shortest alone; score by shortest acceptable output.</p>
+          <p>Compare acceptance checks and full task cost, not response length alone. Usefulness takes priority over brevity.</p>
         `,
         "Lab 7: format forcing": `
           <p><strong>Timing:</strong> 15 min.</p>
@@ -1755,7 +1753,7 @@ repo instructions</code></pre>
         `,
         "Ask vs Edit vs Agent": `
           <p><strong>Timing:</strong> 6 min.</p>
-          <p>Make this practical. Ask is cheapest. Edit is targeted. Agent is powerful but expensive. Coding Agent for autonomous issue-to-PR.</p>
+          <p>Use Ask for supplied-context questions, Edit for bounded changes, and Agent for tool-based work. Cost depends on model, context, and steps; no mode has a universal price.</p>
           <p>Common failure: vague prompt in Agent Mode.</p>
         `,
         "Auto model default": `
@@ -1764,7 +1762,7 @@ repo instructions</code></pre>
         `,
         "Retune prompts when model changes": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Model upgrades are dependency upgrades. Retune instruction files and agent profiles based on official prompt guide, then review diff.</p>
+          <p>If an upgrade changes prompt behavior, consult the official guide and revise affected instructions. Leave measured, stable prompts alone.</p>
         `,
         "When not to compress": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1796,7 +1794,7 @@ repo instructions</code></pre>
         `,
         "Keep landmines only": `
           <p><strong>Timing:</strong> 5 min.</p>
-          <p>Great facilitation question: "Can agent discover this by reading code?" If yes, delete or scope it.</p>
+          <p>Ask whether the agent can discover the fact from code. Remove redundant guidance; scope rules that apply only to particular paths.</p>
         `,
         "Bug tracker model": `
           <p><strong>Timing:</strong> 3 min.</p>
@@ -1804,7 +1802,7 @@ repo instructions</code></pre>
         `,
         "Lab 10: landmine pruning": `
           <p><strong>Timing:</strong> 35 min.</p>
-          <p>Use strict 10-line cap to force priority. If team argues, move disputed rules into scoped/on-demand bucket.</p>
+          <p>Judge each rule by reader value and recurring failures, not a line cap. Scope path-specific rules and preserve necessary safeguards.</p>
         `,
         "MCP and tool costs": `
           <p><strong>Timing:</strong> 2 min.</p>
@@ -1870,7 +1868,7 @@ repo instructions</code></pre>
         `,
         "Repo setup steps": `
           <p><strong>Timing:</strong> 5 min.</p>
-          <p>Explain dependency chain: tiny global instructions first, scoped depth second, Coding Agent setup third.</p>
+          <p>Choose only the setup changes the repo needs. Instruction scoping and agent environment setup solve different problems.</p>
         `,
         "Starter instruction template": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1882,7 +1880,7 @@ repo instructions</code></pre>
         `,
         "Precise issue template": `
           <p><strong>Timing:</strong> 4 min.</p>
-          <p>Issue quality controls agent exploration. Good issue descriptions are cheaper and produce better PRs.</p>
+          <p>Clear issues can reduce guessing. The shown fix is an example, not a diagnosis to apply without inspecting code.</p>
         `,
         "Build habit over 4 weeks": `
           <p><strong>Timing:</strong> 4 min.</p>
@@ -1978,7 +1976,7 @@ repo instructions</code></pre>
         `,
         "Final checklist": `
           <p><strong>Timing:</strong> 5 min.</p>
-          <p>Use to verify plan coverage. If one quadrant is empty, customer rollout has a blind spot.</p>
+          <p>Check the plan against the customer's actual needs. Not every rollout needs changes in all four areas.</p>
         `,
         "Closing message": `
           <p><strong>Timing:</strong> 2 min.</p>

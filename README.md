@@ -15,7 +15,7 @@ Start with concise plain language, relevant context, and an appropriate mode/mod
 
 ## Choose the mechanism
 
-| What needs attention | Canonical chapter |
+| Source of waste | Chapter |
 |---|---|
 | Long answers or optional Caveman style | [Output Control](docs/05-output-control.md) |
 | Unclear or wordy requests | [Prompt Compression](docs/02-prompt-compression.md) |
@@ -31,7 +31,7 @@ Start with concise plain language, relevant context, and an appropriate mode/mod
 
 ## Caveman: optional, not the default
 
-Start with ordinary concise instructions. The [evidence review](docs/05-output-control.md#caveman-optional-output-style) separates output-length changes from whole-task cost and explains why older headline claims do not establish savings on your workload.
+The [evidence review](docs/05-output-control.md#caveman-optional-output-style) explains what Caveman's output reductions do—and do not—show about total task cost.
 
 Use the [default/concise/Caveman protocol](docs/05-output-control.md#compare-default-concise-and-caveman) to test added value beyond `Answer concisely.` This guide has not run its own paid three-arm benchmark.
 

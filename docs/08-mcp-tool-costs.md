@@ -155,20 +155,19 @@ Don't enable every MCP server globally. Use workspace-level configuration:
 
 Disable servers the current task does not need. Their loaded definitions add context even when no tools are called.
 
-**VS Code extensions count too.** MCP servers are the obvious source of tool schemas, but some extensions also add skills, chat participants, agent profiles, or tool surfaces that can appear in the AI context. For cost-sensitive coding sessions, keep a lean VS Code profile: core language tooling, GitHub Copilot, and only the MCP/tools needed for that repo. Disable everything else at the workspace or profile level.
+**Check extension-provided tools too.** Some extensions add skills, chat participants, agents, or tools. Use a focused workspace or profile; disable unnecessary AI integrations rather than unrelated editor features.
 
 ## 2.7.6 Practical Guidance
 
-1. **Audit your MCP servers** — run through your enabled servers. Do you actually use all of them? Disable the rest
-2. **Task-based enabling** — working on DB migrations? Enable the Postgres MCP. Done? Disable it
+1. **Load tools for the task** — keep Postgres MCP for database work, not every coding session. Choose the set before long work; use the linked handoff guidance when it changes.
+2. **Inspect actual context** — loaded definitions add input; deferred tools and installed servers are different.
 3. **Prefer built-in tools** — VS Code's built-in tools (file read/write, terminal, search) are already loaded by the agent. Adding an MCP filesystem server on top is redundant
-4. **Watch loaded definitions** — a large active catalog can add thousands of tokens per step; an enabled but deferred tool is different
-5. **Custom instructions help** — add "Minimize tool calls. Read files only when necessary." to reduce call frequency
-6. **Use on-demand guidance for occasional capabilities** — skills can teach precise CLI patterns without adding another tool server. Hosts differ in how they defer MCP definitions; measure loaded context rather than assuming every schema is always present.
-7. **Optional, Copilot CLI only: try CodeAct for long tool chains** — external plugin [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin) collapses many small tool hops into one sandboxed execution. That does not shrink any one server's schema, but it can reduce how often the full tool catalog gets replayed on CLI-heavy tasks
-8. **Use a focused custom agent for repeat coding workflows** — a custom agent can carry a narrow tool list and stable instructions, so the same coding workflow starts with the same active surface instead of whatever the default chat currently exposes. Where your Copilot surface supports model selection in agent/profile files, pin the intended model there too
-9. **Compress tool output at the source with RTK or snip** — [RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) and [`snip`](https://github.com/edouard-claude/snip) are CLI proxies that filter the *results* of shell commands before they reach the agent. Reductions are real but vary by command, project output volume, and hook reliability. See §2.7.7 and §2.7.8
-10. **Use minimal-context skills before adding more tools** — [`minimal-context-tools`](https://github.com/SebastienDegodez/copilot-instructions/tree/main/plugins/minimal-context-tools) packages skills for `rg`, `fd`, `jq`, `yq`, `ast-grep`, and related CLIs. The pattern is cheap because it steers the agent toward precise one-shot commands before any large output exists. Pair it with RTK/snip when shell output is still noisy.
+4. **Keep calls purposeful** — read enough to act correctly. Fewer calls are not useful if missing context causes rework.
+5. **Use on-demand guidance** — skills can teach occasional CLI workflows without another server. Measure their loaded metadata and instructions too.
+6. **Consider CodeAct for long CLI tool chains** — external plugin [`copilot-codeact-plugin`](https://github.com/jsturtevant/copilot-codeact-plugin) combines small operations in one sandboxed execution. It can reduce repeated context replay, not schema size.
+7. **Use a focused agent for repeat workflows** — narrow tools and stable instructions keep the setup consistent. Set a model in the profile only where your Copilot surface supports it.
+8. **Filter noisy shell output** — [RTK (Rust Token Killer)](https://github.com/rtk-ai/rtk) or [`snip`](https://github.com/edouard-claude/snip) can reduce result size. Check that failures and diagnostic details survive. See §2.7.7 and §2.7.8.
+9. **Choose precise commands first** — [`minimal-context-tools`](https://github.com/SebastienDegodez/copilot-instructions/tree/main/plugins/minimal-context-tools) provides guidance for `rg`, `fd`, `jq`, `yq`, `ast-grep`, and related CLIs. Targeted queries can avoid large output before a filter is needed.
 
 ## 2.7.7 Compress Tool Output at the Source: RTK
 
@@ -176,7 +175,7 @@ MCP schema overhead is the cost *before* any work. Separately, every shell comma
 
 Copilot already uses prompt caching, deferred tool schemas, WebSocket transport, compaction, and output caps. VS Code's terminal tool limits output with head/tail-style truncation; Copilot CLI also tells the model to filter large results with tools such as `head`, `tail`, `grep`, or `awk`. RTK and snip filter earlier, producing command-specific summaries before output reaches those limits.
 
-[**RTK (Rust Token Killer)**](https://github.com/rtk-ai/rtk) is a CLI proxy that sits between the shell and the agent. It runs the original command, captures the output, applies per-command filters (noise removal, keeping only failing tests, deduplicating log lines, grouping file listings), and returns the compressed result. The agent sees smaller output; its behavior is otherwise unchanged.
+[**RTK (Rust Token Killer)**](https://github.com/rtk-ai/rtk) runs the original command and filters its output: removing noise, highlighting failing tests, deduplicating logs, or grouping file listings. Smaller results change what the agent sees, so verify that useful diagnostics remain.
 
 **How it works, step by step:**
 1. Agent issues a Bash tool call (`git status`, `cargo test`, etc.)
@@ -235,7 +234,7 @@ rtk init --agent cline        # Cline / Roo Code (project-level)
 
 **Scope:** The hook intercepts **Bash tool calls** issued by the agent. VS Code Copilot's built-in tools (`Read`, `Grep`, `Glob`) do not go through Bash and are not affected. Use shell-equivalent commands (`cat`, `rg`, `find`) when you specifically want RTK filtering.
 
-**Pairs with MCP reduction:** Schema audit (§2.7.4–2.7.6) cuts the definition cost that reloads every step. RTK cuts what each tool call *returns*. Both address different parts of the token budget and work together.
+**Pairs with MCP reduction:** Schema audits reduce loaded definitions; RTK reduces shell results. These address different costs.
 
 ## 2.7.8 RTK Alternative: snip
 
@@ -306,7 +305,7 @@ Start with stable session settings and fewer loaded MCP schemas. Use precise com
 
 ## 2.7.10 Case Study: Scoping a Large Plugin — Azure MCP
 
-A single plugin can dominate your `System/Tools` budget. Dina Berry (Microsoft/GitHub content contributor) audited her Copilot CLI setup with `/context` and found the Azure MCP plugin loading **~27K tokens per message** by default — more than all her other MCP servers combined.
+In Dina Berry's Copilot CLI audit, the Azure MCP plugin loaded **~27K tokens per message**—more than her other MCP servers combined.
 
 The cause: the Azure MCP Server (v3.0.0-beta.6) exposes 259 tools across 56 namespaces. In its default `namespace` mode it already groups by service, but if you're only using a few Azure services, most of those schemas are noise in every message.
 
@@ -317,7 +316,7 @@ The cause: the Azure MCP Server (v3.0.0-beta.6) exposes 259 tools across 56 name
 "azure@azure-skills": false
 ```
 
-Result: ~27K tokens freed from every message immediately.
+In the reported setup, disabling it removed roughly 27K loaded tokens per message. Other versions or deferred-loading hosts can differ.
 
 **Option B — namespace scoping (recommended):**
 
@@ -358,7 +357,7 @@ After (Azure scoped):      System/Tools 35.2k (18%) — Free Space 45%
 After (+ slim instructions): System/Tools 25.5k (13%) — Free Space 67%
 ```
 
-When `System/Tools` is high, inspect large plugins first. In this case, one plugin accounted for more context than the other MCP servers combined. Full writeup: [dfberry.github.io](https://dfberry.github.io/2026-05-06-tuning-up-copilot-context).
+Inspect large plugins when `System/Tools` is high. Full writeup: [dfberry.github.io](https://dfberry.github.io/2026-05-06-tuning-up-copilot-context).
 
 ---
 

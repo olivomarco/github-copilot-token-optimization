@@ -18,7 +18,7 @@ Tomasz Tunguz describes this as the shift to intelligence per dollar: the applic
 outcome per token = verified work completed / total tokens spent
 ```
 
-For agentic coding, cost behaves differently than in simple chat. The Microsoft/Stanford paper "How Do AI Agents Spend Your Money?" reports that agentic coding tasks consume roughly **1,000×** more tokens than code chat, runs on the same task can vary by up to **30×**, and higher token usage does not reliably improve accuracy.[^agent-costs]
+The Microsoft/Stanford paper "How Do AI Agents Spend Your Money?" reports large differences between agentic coding and code chat. Its findings below describe the studied tasks and runs, not fixed multipliers for every workload.[^agent-costs]
 
 ### What the research shows
 
@@ -28,7 +28,7 @@ For agentic coding, cost behaves differently than in simple chat. The Microsoft/
 | Same task can vary by up to **30×** across runs | Budget with margin; one run is not a stable cost estimate |
 | Higher token usage does not reliably improve accuracy | More exploration is not automatically better work |
 | Accuracy often peaks at intermediate cost and then saturates | Defaulting to the biggest model for every step can waste money |
-| Input tokens dominate agentic cost | Context hygiene matters as much as output terseness |
+| Input tokens dominate agentic cost in the study | Inspect context and billed token buckets before prioritizing output terseness |
 | Models underestimate their own token use | Do not trust an agent's pre-task cost guess; use budgets and stop rules |
 | Token efficiency varies by model independent of pass rate | Compare outcome and cost together, not benchmark score alone |
 
@@ -46,17 +46,17 @@ Use these habits to reduce wasted work:
 
 Watch for vague prompts, oversized context, expensive models left selected, missing acceptance criteria, and tests run only after extensive edits. These patterns make rework harder to avoid.
 
-## Prompt Skills as Superpowers
+## Use skills to reduce rework
 
 The community project [`obra/superpowers`](https://github.com/obra/superpowers) packages repeatable agent practices as skills.[^superpowers] It is not an official GitHub product. This chapter uses its approach to organize practices that can reduce rework:
 
-| Skill | What it does | Token effect |
+| Skill | What it does | Potential benefit |
 |---|---|---|
 | Brainstorming | Explore multiple approaches before choosing | Prevents early lock-in and wrong-direction code |
 | Planning | Converts intent into file-level steps and checks | Reduces guessing during execution |
 | Greenness | Keeps tests passing through the work | Avoids debugging unknown baseline failures |
 | Verification before completion | Requires evidence before "done" | Prevents false completion and rework |
-| Impeccable close | Finishes cleanly with criteria, tests, and PR summary aligned | Prevents review churn and follow-up agent sessions |
+| Impeccable close | Aligns acceptance criteria, tests, and PR summary | Reduces review questions and follow-up work |
 | Branch-close discipline | Ends branch/session cleanly after merge | Prevents stale context from leaking into next task |
 
 The skills below are patterns. The public libraries that follow are example implementations of those patterns, not mandatory dependencies.
@@ -75,30 +75,17 @@ Borrow skills that clarify requirements, tool use, tests, handoffs, or review. T
 | [`mattpocock/skills`](https://github.com/mattpocock/skills) | TDD, bug diagnosis, code review, domain modeling | Engineering tasks need sharper loops | Examples skew Claude and TypeScript workflows |
 | [`PramodDutta/qaskills`](https://github.com/PramodDutta/qaskills) | QA and test-generation skills | Need Playwright, API, BDD, security, accessibility, or bug-report depth | Large skill files; early project |
 
-### Skill Library Star History
-
-[![Skill library Star History Chart](https://api.star-history.com/svg?repos=obra/superpowers,softaworks/agent-toolkit,catpilotai/catpilot-ai-guardrails,vercel-labs/agent-browser,vercel-labs/writing-guidelines,mattpocock/skills,PramodDutta/qaskills&type=timeline)](https://www.star-history.com/#obra/superpowers&softaworks/agent-toolkit&catpilotai/catpilot-ai-guardrails&vercel-labs/agent-browser&vercel-labs/writing-guidelines&mattpocock/skills&PramodDutta/qaskills&timeline)
-
-Stars show community attention, not quality. Judge a skill by whether it improves the next action.
-
 ### `obra/superpowers`: Baseline Agent SDLC Discipline
 
 Superpowers turns general advice such as "be careful" into named procedures the agent can follow.[^superpowers]
 
-- Borrow the TDD, planning, verification, and branch-finish habits.
-- Convert team norms into small reusable prompts or skill files.
-- Prefer skills that force evidence: test output, file-level plan, acceptance criteria, or clean close.
-- Do not load broad skills when a one-line instruction would steer the next action.
+Borrow TDD, planning, verification, or branch-finish guidance when it supplies a needed next step. Prefer concrete evidence requirements over broad instructions to "be careful." A one-line rule may be enough.
 
 ### `softaworks/agent-toolkit`: Planning, Handoff, and Entropy Control
 
 `agent-toolkit` contains skills, subagents, and commands for Claude-style workflows.[^agent-toolkit] Borrow its planning and handoff patterns for long-running work rather than installing everything.
 
-- Use `gepetto`-style flow for complex features: research, stakeholder questions, spec, plan, review, then execution.
-- Use `requirements-clarity` before coding when the task still has hidden ambiguity.
-- Use `session-handoff` when a long session must transfer context without leaking stale decisions or secrets.
-- Use `reducing-entropy` as an explicit deletion-biased review: fewer files, fewer branches, less code, clearer seams.
-- Use instruction-file refactor patterns when `AGENTS.md`, `CLAUDE.md`, or team prompts grow so large they become context tax.
+Use `requirements-clarity` for unresolved requirements and `session-handoff` to transfer relevant decisions without stale context or secrets. For complex features, borrow the `gepetto` research/plan/review flow only where those stages are needed. Use `reducing-entropy` or instruction-file refactoring when unnecessary code or bloated `AGENTS.md` and `CLAUDE.md` files impede work.
 
 ### `catpilot-ai-guardrails`: Risk Stops Before Expensive Mistakes
 
@@ -124,21 +111,13 @@ Guardrail skills address secret leaks, unsafe cloud changes, database damage, su
 
 Vercel's writing guidance focuses on explicit goals and testable success criteria.[^writing-guidelines] Use it to clarify specs, implementation prompts, and PR descriptions before they create review questions.
 
-- Write goals with testable verbs, not vague aspirations.
-- Keep one page or prompt focused on one job.
-- Use the plan as the implementation prompt, test spec, and PR-description seed.
-- Flag weasel words and vague quantifiers before sending text to an agent.
-- Borrow the second-pass review pattern: ask another agent or model for concrete `file:line` findings, not general praise.
+Write testable goals and keep each prompt focused on one job. Reuse an adequate plan as the implementation prompt, test specification, and PR-description source rather than maintaining duplicate artifacts. When a separate review is warranted, request concrete `file:line` findings.
 
 ### `mattpocock/skills`: Engineering Loops That Reduce Guessing
 
 Matt Pocock's skills cover TDD, bug diagnosis, code review, domain modeling, and work decomposition.[^mattpocock-skills] Use them when the agent would otherwise jump from a symptom straight to an edit.
 
-- Use TDD skills to agree on seams before implementation.
-- Use bug-diagnosis skills to build a fast, deterministic red/green loop before theorizing.
-- Split review into two axes: standards review and spec review, so style concerns do not hide requirement misses.
-- Use domain-modeling vocabulary such as seam, adapter, leverage, locality, and module depth to guide architecture prompts.
-- Use wayfinding patterns to separate human-in-the-loop tickets from agent-runnable work.
+Use TDD or bug-diagnosis guidance to establish a reproducible failing test before editing. Review both requirements and engineering standards; do not let style obscure missing behavior. Domain-modeling and wayfinding guidance help when architecture or task boundaries need a human decision.
 
 ### `qaskills`: QA Depth on Demand
 
@@ -166,9 +145,9 @@ Leave out skills that will not change the next edit, command, test, or review.
 
 ### Do Not Over-Optimize the Skill Stack
 
-Do not let skill selection delay the work. For most tasks, start with a clear plan and one review of its assumptions.
+Do not let skill selection delay the work. A small, clear task may need only a direct edit and targeted verification.
 
-Use a simple `plan + grill-me` loop before adding more machinery:
+For complex work, use a `plan + grill-me` loop before adding more machinery:
 
 1. write the plan with acceptance criteria, likely files, risks, and verification command
 2. ask a second pass to grill the plan: missing edge cases, wrong assumptions, cheaper path, and failure modes
@@ -178,7 +157,7 @@ Add specialized skills only when they change the next action. If the task is not
 
 ### Brainstorming Skill
 
-Use this before the first edit when requirements are ambiguous.
+Use this when comparing approaches would resolve a meaningful design choice:
 
 ```text
 Before coding, list three implementation approaches.
@@ -214,7 +193,7 @@ Before asking an agent to modify code:
 3. ask it to preserve that baseline
 4. run tests before accepting completion
 
-If tests start red and the agent does not know that, it spends tokens debugging pre-existing failures. If tests go red during the task and the agent keeps editing, it compounds uncertainty.
+Record pre-existing failures so the agent does not mistake them for regressions. Investigate new failures before further edits obscure their cause.
 
 ### Verification-before-Completion Skill
 
@@ -250,7 +229,7 @@ Stale sessions accumulate decisions, tool output, file reads, and abandoned appr
 
 ## Plan First, Then Execute Cheaply
 
-The strongest pattern is two separate phases:
+For complex work with a concrete handoff, separate planning from execution:
 
 ![Plan first, execute cheaply: plan with a strong reasoning model, save acceptance criteria, execute in a fresh cheaper session, then verify or revise the plan.](assets/diagrams/plan-execute-cheaply.svg)
 
@@ -269,7 +248,7 @@ Use [Model Selection & Pricing](11-models-and-pricing.md) to choose planning and
 
 ## Benchmarks: Useful, Not Decisive
 
-Benchmarks help choose lanes. They do not replace measurement on your repo.
+Benchmarks help shortlist models. They do not replace measurement on your repo.
 
 | Benchmark | Measures | Why it matters | Caveat |
 |---|---|---|---|
@@ -317,18 +296,9 @@ Use benchmarks to pick candidates. Use your own repo tasks to pick defaults.
 
 ## A Practical Decision Checklist
 
-Before starting an expensive agent session:
+Before expensive work, confirm that the task needs an agent, the expected result is clear, and verification is defined. Record the test baseline, attach relevant context, and check model policy.
 
-1. **Is the task actually agentic?** If not, use Ask mode or inline completion.
-2. **Is the baseline green?** If not, fix or record it first.
-3. **Is the plan written?** If not, plan first.
-4. **Can execution run on a cheaper model?** If yes, do that in a fresh session.
-5. **Is context targeted?** Attach only the plan and relevant files.
-6. **Are acceptance criteria explicit?** If not, write them before execution.
-7. **Is verification defined?** Name the test/build/check command up front.
-8. **Will a model switch invalidate cache?** If yes, start fresh instead.
-9. **Is the model policy allowed for this org/customer?** Check admin and compliance constraints.
-10. **Will the close be clean?** Require test evidence and a concise summary.
+For a complex task, capture the design decisions in a plan. Try cheaper execution in a fresh session when that plan is sufficient; report test evidence and unresolved blockers at completion.
 
 ## Cross-References
 

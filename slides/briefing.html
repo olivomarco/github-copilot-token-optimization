@@ -86,7 +86,7 @@
             <div class="card"><h3>Keep</h3><p>Project pitfalls, required commands, naming, architecture rules, output constraints.</p></div>
             <div class="card"><h3>Remove</h3><p>Boilerplate, facts visible in code, duplicate rules, occasional checklists.</p></div>
           </div>
-          <p>Every token in <code>.github/copilot-instructions.md</code> is paid repeatedly. Put rare guidance in scoped or on-demand files.</p>
+          <p>Loaded instructions add input on later turns. Put path-specific rules in scoped files and occasional guidance on demand.</p>
         </section>
 
         <section>
@@ -154,7 +154,7 @@
 
         <section>
           <h2>10. Reuse a codebase map</h2>
-          <p><a href="https://github.com/Graphify-Labs/graphify">Graphify</a> maps a large repo once, then agents query structure instead of repeatedly reading broad file sets.</p>
+          <p><a href="https://github.com/Graphify-Labs/graphify">Graphify</a> builds a reusable repo map for structural queries. Update it after refactors.</p>
           <pre><code>graphify query "where is auth middleware?"
 graphify path "Router" "Database"</code></pre>
           <p class="small">Best for large repos and repeated agent sessions. Skip it for small, one-off changes.</p>
@@ -188,12 +188,12 @@ graphify path "Router" "Database"</code></pre>
         <section>
           <h2>14. Adopt and sustain</h2>
           <div class="grid">
-            <div class="card"><h3>Week 1</h3><p>Constrain output. Trim repo instructions.</p></div>
-            <div class="card"><h3>Week 2</h3><p>Route Ask, Edit, and Agent deliberately.</p></div>
-            <div class="card"><h3>Week 3</h3><p>Audit MCP tools and command output.</p></div>
-            <div class="card"><h3>Week 4</h3><p>Plan-first workflows, cache stability, and usage review.</p></div>
+            <div class="card"><h3>Long responses</h3><p>Set concise output preferences.</p></div>
+            <div class="card"><h3>Large context</h3><p>Trim loaded instructions, files, and tools.</p></div>
+            <div class="card"><h3>Noisy commands</h3><p>Try one output filter; preserve diagnostics.</p></div>
+            <div class="card"><h3>Repeated rework</h3><p>Clarify the task, model choice, and verification.</p></div>
           </div>
-          <p class="small">Every task: constrain output, target context, choose the harness, plan, and verify.</p>
+          <p class="small">Choose a change for observed waste. Compare accepted work and total cost.</p>
           <p class="small"><a href="../">Read the guide</a> · <a href="index.html">Open the full workshop</a></p>
         </section>
       </div>

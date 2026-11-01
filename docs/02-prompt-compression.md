@@ -29,7 +29,7 @@ Do not delete uncertainty that changes meaning. "May be null" is not the same as
 
 There is no general savings or quality guarantee for these levels. Start with ordinary concise language, not maximum compression. For the separate Caveman **response-style skill**, see [output evidence and limitations](05-output-control.md#caveman-optional-output-style).
 
-## 2.1.3 Structured Format Over Prose
+## 2.1.3 Structure distinct requirements
 
 Use bullets or key-value pairs when a request has distinct requirements.
 
@@ -73,7 +73,7 @@ Like getUserById but for emails. Return 404 if missing.
 
 Use this only when the agent can inspect the referenced function. State any differences explicitly.
 
-## 2.1.6 Quality Over Quantity — Scope, Don't Pile On
+## 2.1.6 Fix task scope before adding rules
 
 When the model gets something wrong, check whether the task is clear before adding global rules.
 

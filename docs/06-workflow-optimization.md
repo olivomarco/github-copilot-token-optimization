@@ -8,14 +8,14 @@
 
 Use Conventional Commits with a subject of ≤50 characters. Add a body when the reason for the change is not obvious.
 
-**Verbose commit (~25 tokens):**
+**Verbose commit:**
 
 ```text
 feat: Added a new feature to allow users to reset their passwords through
 the settings page, which also sends a confirmation email
 ```
 
-**Terse commit (~10 tokens):**
+**Concise commit:**
 
 ```text
 feat: add password reset via settings page
@@ -23,13 +23,13 @@ feat: add password reset via settings page
 Sends confirmation email on reset.
 ```
 
-The Coding Agent reads git history for context, so concise commits reduce input across later sessions.
+Concise commits are easier to scan and use fewer tokens when an agent loads git history. Keep the reason when it matters.
 
 ## 2.5.2 PR Reviews
 
-Instead of paragraph-long review comments, use one-line format:
+Name the issue, location, consequence, and fix. One line is enough when it preserves those details.
 
-**Verbose review comment (~40 tokens):**
+**Verbose review comment:**
 
 ```text
 I noticed that on line 42, the user variable could potentially be null at this
@@ -38,15 +38,15 @@ access the user's email property. You should add a null check before accessing
 this property to handle this edge case properly.
 ```
 
-**Terse review (~12 tokens):**
+**Concise review:**
 
 ```text
 L42: 🔴 bug: user can be null here. Add null guard before .email access.
 ```
 
-**Savings: ~70%.** The shorter comment still identifies the bug, location, and fix.
+This hand-written pair shows a shorter comment, not a measured savings rate.
 
-Severity prefixes encode priority in 1-2 tokens:
+Severity labels can make priority easier to scan:
 
 - 🔴 Bug / security issue — must fix
 - 🟡 Suggestion — should fix
@@ -55,9 +55,9 @@ Severity prefixes encode priority in 1-2 tokens:
 
 ## 2.5.3 Ask Mode vs. Agent Mode
 
-**Agent Mode** can trigger 3-10 internal model calls per visible action. It reads files, plans, executes, verifies. Each step costs tokens.
+**Agent Mode** can make multiple model and tool calls to read, plan, edit, and verify. Each step adds token usage.
 
-**Ask Mode** is a single call. One question, one answer.
+**Ask Mode** suits questions that can be answered from the supplied context without an implementation loop.
 
 ![Copilot mode decision tree: use Ask for questions, Edit for single-file changes, Agent for clear multi-file work, and clarify vague work before execution.](assets/diagrams/mode-decision-tree.svg)
 
@@ -78,8 +78,7 @@ For **tool-heavy Copilot CLI sessions**, the optional external [`copilot-codeact
 
 Why this can save tokens:
 
-- Fewer turns means less replay of system prompt, prior messages, and built-in tool definitions.
-- If MCP servers are loaded, their tool catalogs are replayed fewer times too, so savings can compound.
+- Fewer turns can mean less replay of prompts, history, and loaded tool definitions, including MCP catalogs.
 - One consolidated result is often shorter than narrating every intermediate `grep` / `view` / `bash` hop.
 
 When to use it:
@@ -110,7 +109,7 @@ Use [Model Selection & Pricing](11-models-and-pricing.md#good-default-heuristics
 
 Retuning a prompt may not shorten each request. Its purpose is to improve the first result and avoid follow-up turns, repeated clarification, and rework.
 
-Model providers publish prompting guides that change with model versions. Treat model upgrades like dependency upgrades: read the migration/prompt guide, then adapt your prompts and instruction files for that model's current behavior.
+Model providers publish prompting guides that change with model versions. When an upgrade changes prompt behavior, consult the provider's migration or prompting guide. Adapt only the instructions affected.
 
 **Workflow:**
 
@@ -196,7 +195,7 @@ The subcommands are `standup`, `tips`, `cost tips`, `search`, `improve`, and `re
 
 ### The `cost tips` workflow
 
-Run it weekly to review where tokens go:
+Review where tokens went:
 
 ```text
 /chronicle cost tips
@@ -206,19 +205,19 @@ Use its session-specific recommendations to choose which habits to change.
 
 ### The `improve` workflow
 
-Run this weekly or when you notice repeated confusion:
+Use this when the same misunderstanding recurs:
 
 ```text
 /chronicle improve
 ```
 
-Copilot CLI reads your recent CLI sessions, identifies recurring confusion (e.g., it kept assuming the wrong test framework, or kept asking which directory contains the API code), and proposes additions to your custom instructions. Review the suggestions — accept the ones that match real project-specific cautions, skip the ones that are just LLM-generated boilerplate (see [Part 7: The AGENTS.md Problem](07-agents-md-problem.md) for why pruning matters).
+Copilot CLI proposes instructions from recurring confusion in recent sessions, such as assuming the wrong test framework. Accept project-specific corrections; skip boilerplate. See [Part 7: The AGENTS.md Problem](07-agents-md-problem.md) for what to keep.
 
-Each correction adds your follow-up and accumulated history as input, plus a new response as output. Three extra turns can cost 10K-30K tokens. Add a project-specific instruction only when it addresses a recurring failure.
+Corrections add follow-up input, replayed history, and new output. Add reusable guidance only when it addresses a recurring failure.
 
 ### The `tips` workflow
 
-Run every week or two:
+Look for workflow suggestions:
 
 ```text
 /chronicle tips
@@ -226,19 +225,13 @@ Run every week or two:
 
 Keep suggestions that fit your workflow, such as using Ask Mode for explanations, scoping instructions with `applyTo`, or disabling unused MCP servers.
 
-### Where this fits in the workflow
-
-- **Weekly:** `/chronicle cost tips` — see where tokens go, and `/chronicle tips` — catch missed habits.
-- **When something feels repetitive:** `/chronicle improve` — turn the friction into a one-time fix.
-- **Daily standup (optional):** `/chronicle standup last 24 hours` — for the human ritual, not for tokens.
-
 All session data lives locally in `~/.copilot/session-state/` and on your machine only. This is **Copilot CLI session data**, not a general Copilot Chat history store. Standard model interactions still apply when you run a `/chronicle` command (the data is sent to the model to generate the summary), but nothing is uploaded for storage.
 
 ## 2.5.8 VS Code Usage Analytics: AI Engineering Coach
 
-[`/chronicle`](#257-close-the-loop-with-chronicle) covers Copilot CLI sessions. For VS Code usage, [**AI Engineering Coach**](https://github.com/microsoft/AI-Engineering-Coach) is the counterpart — a local VS Code extension that reads your VS Code AI session logs and surfaces the same class of insight: anti-patterns, token patterns, context health, and skill discovery.
+For VS Code history, [**AI Engineering Coach**](https://github.com/microsoft/AI-Engineering-Coach) reads local AI session logs to identify recurring mistakes, token patterns, context issues, and reusable skills.
 
-> **Privacy:** All analysis runs locally. No data leaves your machine. The extension is read-only — it never modifies your session files. Optional AI features (rule compiler, context review) use the VS Code built-in Copilot model API only when you explicitly invoke them.
+> **Privacy:** Local analysis is read-only and does not send session data off-machine. Optional AI features, such as rule compilation and context review, use the VS Code built-in Copilot model API when explicitly invoked; do not assume those features are offline.
 
 Key capabilities relevant to token efficiency:
 
@@ -259,8 +252,6 @@ code --install-extension ai-engineer-coach-*.vsix
 ```
 
 Then `Cmd+Shift+P` → **AI Engineer Coach: Open Dashboard**.
-
-Use `/chronicle` for CLI history and instruction suggestions. Use AI Engineering Coach for VS Code history, context bloat, unused MCPs, and instruction gaps.
 
 ## 2.5.9 Plan First, Then Execute (and Route the Phases)
 
@@ -287,7 +278,7 @@ Add third-party tools only for the layer they actually improve:
 | Codebase orientation | Graphify | Repeated structural file reads across sessions |
 | Visibility/audit | [Tokentop](https://github.com/tokentopapp/tokentop), Tokalator, token-optimizer | Tokentop gives live local session, model, token, cost, and burn-rate visibility; monitoring does not compress by itself |
 
-**Rule:** one tool per layer. Combining CodeAct with RTK or snip can make sense because one reduces turn count and the other reduces output size. Running RTK and snip on the same command path usually does not — it can double-truncate output and make failures harder to inspect.
+Avoid duplicate filters. CodeAct and one output filter address different costs; RTK and snip on the same command path can double-truncate results and hide failures.
 
 Use [Practical Setup](10-practical-setup.md#step-3-choose-mode-model-and-context) to apply these choices. Tool installation lives in [MCP & Tool Costs](08-mcp-tool-costs.md), not in this workflow summary.
 

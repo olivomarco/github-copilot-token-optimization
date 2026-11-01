@@ -22,17 +22,16 @@ Delete stale notes and repeated rules. Preserve commands, paths, negation, condi
 
 ## 2.3.3 Strategic File Organization
 
-Copilot automatically includes context from your workspace — open files, imported modules, nearby files. You can control what gets included.
+Copilot can include open files, imports, and nearby code. Keep workspace context focused on the task.
 
 **The official exclusion mechanism is Content Exclusion**, configured by repository / organization / enterprise admins via GitHub settings or the REST API. It's only available on **Copilot Business and Enterprise**, and it does **not** apply to Copilot CLI, the Copilot cloud agent, or Agent Mode in Copilot Chat in IDEs. Treat it as a privacy / policy control ("don't read this file"), not a per-developer token-saving knob. See [GitHub Docs — Excluding content from GitHub Copilot](https://docs.github.com/en/copilot/how-tos/configure-content-exclusion/exclude-content-from-copilot).
 
 To reduce auto-included context:
 
 - **Close files you're not working on.** Open tabs contribute to auto-included context. Close large files unrelated to the task.
-- **Keep files focused and small.** If a 1,000-line file is open, Copilot may send large chunks of it as context. Break large files into focused modules.
-- **Use `.gitignore` for build output, vendor dirs, and generated files.** Anything Git ignores is generally not pulled in as auto-context, and it keeps your repo clean as a side effect.
-- **Use `applyTo:` scoped instruction files** (see § 2.3.4 below) so per-domain context only loads when relevant files are open — the most reliable way to shrink per-interaction context.
-- **For Business/Enterprise customers:** ask your repo / org admin to configure **Content Exclusion** for genuinely sensitive paths (secrets, generated bundles, large data files). Primary purpose is policy, but it also keeps that content out of Chat / completions.
+- **Reference the relevant part of a large file.** Do not restructure code solely to reduce context.
+- **Use `.gitignore` for build output, vendor dirs, and generated files.** Check what your host actually includes; Git ignore rules are not a privacy boundary.
+- **Use `applyTo:` scoped instruction files** (see § 2.3.4 below) for path-specific guidance.
 
 Check these sources of large context when open or referenced:
 
@@ -47,13 +46,13 @@ Every file that enters context costs tokens. Be intentional about what's open an
 
 ### Normalize non-text inputs to Markdown first
 
-Convert Word files, PDFs, PowerPoint decks, spreadsheets, images, audio, and exported HTML to clean Markdown before sending their content to the model.
+When the task needs text rather than layout, convert rich documents to clean Markdown before sending them to the model. Check that extraction preserves the information the task needs.
 
 ![Format tax pipeline: rich formats create layout noise, MarkItDown normalizes them to clean Markdown, and rich delivery formats are generated only at the end.](assets/diagrams/format-tax-pipeline.svg)
 
 Marc Bara calls this the **format tax** in [Your .docx Is Wasting 33% of Your AI Budget](https://medium.com/@marc.bara.iniesta/your-docx-is-wasting-33-of-your-ai-budget-86a3d229d042). Rich formats carry font data, XML, page positions, embedded objects, and markup that the model rarely needs. In the article's example, a 10-page PDF report used roughly 12,400 tokens; clean Markdown used about 8,350, a 33% reduction with the same information. HTML exports can add even more layout markup around the content.
 
-The rule: use Markdown as the **working format** for AI interaction, and treat Word/PDF/PowerPoint as delivery formats. Draft, review, summarize, chunk, and retrieve from Markdown. Generate `.docx` or `.pdf` at the end only when a client, regulator, or internal process needs that artifact.
+Use Markdown as the **working format** for text tasks. Keep the original when layout, images, or document structure matter. Generate `.docx` or `.pdf` at the end when the recipient needs that format.
 
 [Microsoft MarkItDown](https://github.com/microsoft/markitdown) is a Python converter for LLM and text-analysis pipelines. It preserves headings, lists, tables, links, and extracted metadata without reproducing the visual layout. Converters include PDF, Word, PowerPoint, Excel, images with EXIF/OCR support, audio with transcription support, HTML, CSV/JSON/XML, ZIP contents, YouTube URLs, EPUBs, and more.
 
@@ -96,7 +95,7 @@ API conventions:
 - All endpoints return { data, error } envelope.
 ```
 
-Without `applyTo`, that's ~30 tokens loaded on every Copilot call across the whole repo. With it, the cost is paid only when you're actually editing API code.
+Scoping keeps this API guidance out of unrelated tasks. The reduction depends on the host's instruction-loading behavior.
 
 Split a large `copilot-instructions.md` into a small always-on core and scoped files such as `api.instructions.md`, `ui.instructions.md`, `tests.instructions.md`, and `migrations.instructions.md`. Give each its own `applyTo` glob so only relevant guidance loads.
 
@@ -104,7 +103,7 @@ Split a large `copilot-instructions.md` into a small always-on core and scoped f
 
 Workflow-specific guidance should follow the same rule as MCP tools: keep it off the always-on prompt and bring it in only when the task needs it. A PR-review checklist, release template, or debugging playbook does not belong in `copilot-instructions.md` if you only use it occasionally.
 
-Treat small prompt files, slash-command snippets, or saved checklists as the home for *workflow-specific* guidance. They stay out of every-day context until you invoke them.
+Keep occasional guidance in prompt files, slash-command snippets, or saved checklists that load on demand.
 
 ### The rule
 
@@ -126,18 +125,18 @@ Three ways to preserve reusable context:
 
 ![Cache stability: stable threads reuse the same model, MCP set, and agent profile; cache-busted threads switch controls mid-session and should use a fresh handoff instead.](assets/diagrams/cache-stability.svg)
 
-**1. Stable instructions at the top, volatile work at the bottom.** Cached context only works if the prefix of your conversation is stable. Don't reshuffle your `copilot-instructions.md` or rotate which files are open between every prompt — keep the stable layer stable, and let only the most recent message change.
+**1. Avoid unnecessary instruction changes.** Prefix caching depends on matching request content. Keep reusable guidance stable; do not retain irrelevant files merely to preserve a cache.
 
-**2. Reuse named context via slash commands and saved snippets.** When you frequently ask about the same domain, define it once and reference it. For example: keep a short customers-schema note or slash-command snippet, load it once for the session, then keep follow-up prompts anchored to that shared summary instead of re-pasting the schema every time.
+**2. Reuse shared context.** Load a short schema note or saved snippet once, then refer to it in follow-up prompts instead of pasting it again.
 
 **3. Keep the request prefix stable.** The prefix contains the system prompt, tool/MCP definitions, and instruction files (the `System/Tools` baseline; see [MCP & Tool Costs §2.7](08-mcp-tool-costs.md)). Changes can invalidate cached context:
 
 | Mid-session change | Effect on cache & context |
 |--------------------|---------------------------|
 | **Switch model or reasoning effort** | Caches are typically per-model, and changing model configuration can discard the cached prefix. Carried history may be processed again under the new configuration. See [model and effort selection](11-models-and-pricing.md#good-default-heuristics). |
-| **Switch custom agent** | Swaps the system prompt, tool set, and instructions — the prefix changes, so the cache is invalidated and the prior accumulated context becomes pollution under the new agent. |
-| **Toggle MCP servers, tools, or loaded skills** | Changes the harness and its tool/instruction definitions in the prefix — cache invalidated, plus you add or remove always-loaded tokens on every later turn. |
-| **Churn large context** | Attaching/detaching big files or pasting large blobs reshuffles context and undercuts prefix stability. Choose your files and context up front. |
+| **Switch custom agent** | Can change the prompt, tools, and instructions. Cached prefixes may no longer match; prior history may also be irrelevant. |
+| **Toggle MCP servers, tools, or loaded skills** | Can change loaded definitions and instructions, affecting prefix reuse and later input size. |
+| **Churn large context** | Attaching or removing large files can affect prefix reuse. Select relevant context, not files kept solely for caching. |
 
 Cached prefixes can reduce both processing time and input cost.
 
@@ -170,7 +169,7 @@ v          v             v
 
 Choose model, effort, agent, and tools before long work. When a different setup is needed, start fresh with relevant context rather than carrying the full thread. Billing behavior varies by surface and plan; this is not guaranteed repricing math.
 
-1. Summarize current thread in 5-10 bullets (decisions, constraints, open tasks).
+1. Summarize the decisions, constraints, and open tasks needed for the next phase.
 2. Start a new chat with the new model/agent/MCP setup.
 3. Paste only the summary + required files, not the entire old transcript.
 
@@ -178,7 +177,7 @@ This keeps old, irrelevant context out of the new session.
 
 ## 2.3.6 Start Fresh Conversations
 
-Conversation history accumulates. After 20+ messages, you might have 50K+ tokens of history sent with every new message.
+Conversation history accumulates until the host compacts or drops it. Long threads can carry tens of thousands of tokens into later requests.
 
 **When to start fresh:**
 

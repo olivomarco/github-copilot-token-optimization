@@ -12,13 +12,13 @@ Developers using GitHub Copilot who want to reduce wasted tokens and rework. Tea
 
 ## Product Purpose
 
-A documentation-first resource for improving useful completed work per total cost. It includes a guide website and presentation decks, not an application UI.
+A guide website and presentation decks for completing useful work at lower total cost.
 
 Success means readers can identify waste, choose a relevant intervention, and evaluate its effect without sacrificing task quality.
 
 ## Positioning
 
-The guide separates output length, loaded context, tool overhead, model costs, and rework. It evaluates token-saving claims against workload and billing evidence rather than treating shorter answers as proof of lower whole-task cost.
+The guide separates output length, loaded context, tool overhead, model costs, and rework. Savings claims need workload and billing evidence; shorter answers alone do not prove lower task cost.
 
 This is community guidance, not official GitHub or Microsoft policy.
 
@@ -54,8 +54,6 @@ Use clear, direct prose and simple practical guidance. Preserve necessary techni
 - `slides/briefing.html`: practitioner briefing.
 - `slides/index.html`: full customer workshop.
 - `.github/workflows/deploy-pages.yml`: website and slide publishing workflow.
-
-Existing source-linked guidance is evidence to assess, not permission to invent benchmarks or guarantee savings.
 
 ## Product Principles
 
