@@ -17,13 +17,13 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
-      "computedHash": "ef1641a2047b71b60f1942cd35efb47d3afc9d584dff5a0b01f8c7db923aaa08"
+      "computedHash": "e40cc1d348f6d935e28f1e24474302d7368f0a400429271a43b35fe154891dc5"
     },
     "humanize-content": {
       "source": "olivomarco/ai-dev-skills",
       "sourceType": "github",
       "skillPath": "skills/humanize-content/SKILL.md",
-      "computedHash": "0a19e363819abac633860ecea1d5e5b60ae14786894eea314317dcf53dc9777b"
+      "computedHash": "9e447a0797333938b3f755f55aee6db6243459f5bed3d26f838fe26904f2a8b0"
     },
     "wait-what": {
       "source": "mattpocock/skills",

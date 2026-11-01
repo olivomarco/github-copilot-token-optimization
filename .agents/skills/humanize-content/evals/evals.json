@@ -138,6 +138,7 @@
         "States that preview access ends on Friday at 17:00 UTC and asks users to export needed reports before then.",
         "Preserves that already-exported reports remain available locally.",
         "States each fact or action once and removes generic communication framing and the recap.",
+        "Every retained sentence contributes a needed fact, action, or clarification for preview users; removes whole sentences that add no reader value rather than merely rephrasing them.",
         "Returns only the update, without invented commitments, extra deliverables, or an explanation of the edits."
       ]
     },
@@ -153,7 +154,8 @@
         "Includes CSV availability now, paid-plan eligibility, and the Settings > Export path.",
         "Keeps the active-record-only scope, archived-record exclusion, and optional nature of the action.",
         "Omits Cedar, planning meetings, and office chairs; adds no unsupported benefit, support promise, or follow-up task.",
-        "Returns only the email without repeating the announcement in a recap."
+        "Returns only the email without repeating the announcement in a recap.",
+        "Every drafted sentence serves the admins' stated purpose through useful information, action, clarification, or appropriate tone; adds no generic scene-setting or empty benefit sentence."
       ]
     },
     {
@@ -354,6 +356,87 @@
         "Keeps the professional voice file byte-for-byte unchanged through both requests and creates no second voice file.",
         "On the follow-up, reads and reapplies the saved professional voice without repeating intake or carrying forward the email-only override.",
         "Both outputs retain Monday, active-record-only exports, and archived-record exclusion without invented promises."
+      ]
+    },
+    {
+      "id": 27,
+      "name": "information-first-bureaucratic-article",
+      "setup": "At the project root, create TONE-OF-VOICE.md with '# Tone of voice\\n\\nVoice: professional.\\n'.",
+      "prompt": "Rewrite this article passage for engineers deciding whether to expand our agent pilot. Return only the passage.\n\nIn this article, we will explore the comprehensive considerations that underpin a successful AI transformation journey. Organizations must leverage robust governance mechanisms to drive strategic alignment. In our pilot, platform engineers approve each agent's production access, and the incident lead investigates failed runs using traces. Nine of twelve sandbox tasks completed; three failed because the API timed out. We have not tested production writes. These results prove the agent is ready for unrestricted production use. It is also worth considering branding, office layout, and the announcement calendar, although none affects this rollout decision. In conclusion, a comprehensive and strategically aligned approach is essential to success.",
+      "expected_output": "A complete, concrete passage with pilot evidence and responsibilities; removes or qualifies the unsupported readiness claim directly, without an approval question or editorial commentary.",
+      "files": [],
+      "assertions": [
+        "Removes or qualifies the unsupported unrestricted-production-readiness claim using the supplied evidence, without claiming the agent is necessarily unready.",
+        "Returns the complete rewritten passage without an approval question, blocker, critique, or explanation of the edits.",
+        "Retains platform engineers approving production access, the incident lead investigating failed runs using traces, nine of twelve completed tasks, three API timeout failures, and untested production writes.",
+        "Removes coverage promises, strategic-alignment filler, branding, office layout, the announcement calendar, and the repetitive conclusion; adds no new rollout procedure."
+      ]
+    },
+    {
+      "id": 28,
+      "name": "calibrated-judgment-from-limited-evidence",
+      "setup": "At the project root, create TONE-OF-VOICE.md with '# Tone of voice\\n\\nVoice: professional.\\n'.",
+      "prompt": "Write a recommendation for engineers deciding whether to enable this retry policy. Return only the recommendation. Facts: the gateway retries HTTP 503 responses twice. It never retries HTTP 400. In 20 staging runs, retries recovered 15 requests; five still failed. Production traffic has not been tested. I think this proves retries will prevent all production outages, so please make the recommendation confident. The available next step is a limited production pilot, not a full rollout.",
+      "expected_output": "A defensible recommendation for a limited pilot with exact behavior and staging evidence; challenges the guarantee while qualifying only the untested production inference.",
+      "files": [],
+      "assertions": [
+        "Recommends a limited production pilot rather than unrestricted rollout or guaranteed prevention of production outages.",
+        "States two retries for HTTP 503 and no retries for HTTP 400 as established behavior, not speculation.",
+        "Retains 15 recovered requests and five failures across 20 staging runs, and makes the absence of production testing explicit.",
+        "Adds no invented performance data, monitoring deliverable, approval process, or rollout checklist; returns only the recommendation."
+      ]
+    },
+    {
+      "id": 29,
+      "name": "justified-deviation-preserves-effective-prose",
+      "setup": "At the project root, create TONE-OF-VOICE.md with '# Tone of voice\\n\\nVoice: professional.\\n'.",
+      "prompt": "Humanize this policy for operators. Return only the policy, retaining the headings because the panels appear separately.\n\n## Start migration\n\nBefore running `migrate --apply`, back up `config.yml`, stop the worker, and confirm that the backup is readable, because the schema change cannot be undone by installing the old binary. The migration may take up to 10 minutes. The cause of yesterday's outage is unknown.\n\n## Recover from failure\n\nThe schema change cannot be undone by installing the old binary. If migration fails, restore `config.yml` before restarting the worker.",
+      "expected_output": "Effective prose preserved, including the long explanatory sentence, meaningful passive voice, necessary uncertainty, and repeated limitation at independent points of use.",
+      "files": [],
+      "assertions": [
+        "Keeps both headings and the schema rollback limitation in each independently displayed panel.",
+        "Preserves backup, worker stop, readable-backup confirmation, and their order before `migrate --apply`; retains the exact `config.yml` and command spans.",
+        "Retains the possible duration of up to 10 minutes, unknown outage cause, and restore-before-restart condition on migration failure.",
+        "Leaves the already-effective policy unchanged, including the long explanatory sentence and passive statement of unknown cause; adds no editorial commentary."
+      ]
+    },
+    {
+      "id": 30,
+      "name": "long-update-select-relevant-material-before-polishing",
+      "setup": "At the project root, create TONE-OF-VOICE.md with '# Tone of voice\\n\\nVoice: professional.\\n'.",
+      "prompt": "Humanize this draft for workspace admins who need to decide whether to use the new scheduled export. Its purpose is to explain eligibility, setup, and limitations, not document the feature's development. Edit the whole draft and return only the revised update. There is no required length or section count; choose the structure that serves those readers.\n\n# Scheduled exports: a comprehensive introduction\n\n## Why we built this\n\nMany admins download records at the end of the week so they can work with them outside the workspace. Until now, those admins had to open Settings > Export and start each download themselves. Scheduled exports let them arrange a weekly export instead. The manual option remains available, so admins who prefer choosing each export's timing can continue using their current process.\n\nThe team considered daily, weekly, and monthly schedules during development. Weekly scheduling was selected for this release after eight of the twelve admins interviewed described a weekly reporting routine. The other four described different routines. Those interviews informed the choice of cadence; they did not establish how much time the feature would save across all customers. The design team also reviewed three versions of the settings screen before choosing the current layout.\n\n## Availability and setup\n\nScheduled exports are available now on paid plans. Only workspace admins can create or change a schedule. Open Settings > Export, select Weekly, choose a day and time, and save. Times are in UTC, including when local clocks change for daylight saving time. Each workspace can have one schedule. Saving a new schedule replaces the previous one; it does not create a second weekly export.\n\nWe kept scheduling alongside manual exports so admins could find both options in the same place. Earlier designs put schedules in a separate automation menu. In usability sessions, participants found the combined screen more easily. The current screen uses the same record-selection labels as the manual export screen. This consistency was one of the design goals, alongside making the scheduling controls fit within the existing settings layout.\n\n## What the file contains\n\nEach export includes records that are active when the export starts. Archived records and workspace settings are excluded. The file is a CSV for use outside the workspace, not a restorable workspace backup. Creating a schedule does not replace any backup procedure your organization already uses. These limits apply to manual exports as well as scheduled exports, so choosing a schedule changes timing rather than the kinds of data included.\n\n## Delivery and missed runs\n\nAfter a successful run, admins receive an email with a download link. That link expires seven days after the export finishes. Files already downloaded remain on the recipient's device after the link expires. If a run fails, admins receive a failure email and no file is produced. The service does not retry that run automatically; an admin can start a manual export or wait for the next scheduled run.\n\n## Looking ahead\n\nDaily schedules and multiple schedules per workspace were discussed during planning, but neither is available and neither has a committed release date. The team plans to review usage before deciding whether to revisit those options. The first internal demonstration used a workspace with 200 sample records, and later demonstrations used larger samples. These demonstrations were intended to show the settings flow, not to establish an export-size limit.\n\n## Bringing it all together\n\nScheduling is optional. If manual exports already meet your needs, no action is required. If you want a weekly CSV, create the schedule from Settings > Export and remember that all times are in UTC. Paid-plan admins can now choose a weekly schedule while retaining the manual option. Taken together, these capabilities give admins another way to organize the export routine that works for their workspace.",
+      "expected_output": "A substantially leaner admin update that selects operationally useful material, removes development history and roadmap discussion rather than compressing them, and preserves eligibility, setup, timing, data scope, delivery, failure behavior, and optional use. A short result with few sections is valid.",
+      "files": [],
+      "assertions": [
+        "Preserves current paid-plan availability, admin-only schedule creation or changes, and the Settings > Export, Weekly, day-and-time, Save sequence.",
+        "Preserves UTC timing through daylight saving changes, one schedule per workspace, and replacement of the previous schedule when a new one is saved.",
+        "Preserves active-at-start record inclusion, archived-record and workspace-settings exclusions, and the distinction between a CSV export and a restorable backup.",
+        "Preserves success-email delivery, link expiry seven days after export completion, and persistence of downloaded local files after expiry.",
+        "Preserves failure-email delivery, no file on failure, no automatic retry, and the choice of a manual export or the next scheduled run.",
+        "Keeps scheduling optional and manual exports available; adds no time-saving guarantee, export-size limit, feature commitment, or new administrative prerequisite.",
+        "Deletes the interviews, cadence-selection history, screen-design iterations, usability findings, internal demonstrations, and uncommitted roadmap discussion as whole concepts, rather than retaining a compressed development-history or future-plans section.",
+        "States each operational fact once unless repetition serves a concrete reader need; removes the generic introduction and concluding recap without forcing the original section count, a comparison table, or a diagram.",
+        "Returns only the revised update and uses the saved voice without intake; adds no editorial rationale, checklist deliverable, or follow-up offer."
+      ]
+    },
+    {
+      "id": 31,
+      "name": "long-operational-guide-restraint-without-information-loss",
+      "setup": "At the project root, create TONE-OF-VOICE.md with '# Tone of voice\\n\\nVoice: direct.\\n'.",
+      "prompt": "Humanize this guide for an on-call operator performing the migration for the first time. The whole guide is editable, but retain its headings because operators use them to find the relevant stage during an incident. Return only the guide. All the steps and limitations below describe the current procedure. Improve concrete reader-facing problems if you find any; the task does not require a shorter result or a visual redesign.\n\n# Migrate the workspace index\n\n## Before you start\n\nRun this migration only on version 4.2. Check the installed version with `indexctl version`. If it reports another version, stop: this procedure does not cover that installation. The migration changes the index schema and cannot be undone by installing the old binary. Schedule a maintenance window of at least 30 minutes. The migration itself may take up to 10 minutes; the remaining time is for checks and recovery if needed.\n\nBack up `config.yml` and the index directory before making changes. Confirm that both backups are readable and were created from this installation. A configuration backup alone is not enough to recover the old index. Keep the backup outside the index directory so the migration cannot overwrite it. If you cannot confirm these conditions, leave the worker running and postpone the migration until you have a usable backup.\n\n## Stop writes\n\nDisable incoming jobs, then stop the worker with `workerctl stop`. Confirm that `workerctl status` reports `stopped`. Disabling incoming jobs does not stop work already in progress, which is why both actions are needed. Keep incoming jobs disabled and the worker stopped until the migration and validation have finished. Reads remain available during the migration, but they may show the last indexed state rather than recent source changes.\n\n## Run the migration\n\nRun `migrate --apply` once. Keep the terminal open until the command exits. If it exits with code 0, proceed to validation. If it exits with any other code, follow Recover from failure. If it is still running after 10 minutes, leave the worker stopped and contact the incident lead before interrupting the process. Running the command again is not a recovery step: it may encounter a partially migrated index.\n\n## Validate and resume\n\nRun `indexctl verify`. Continue only if it reports `schema: 4.2` and `errors: 0`. If either value differs, keep jobs disabled and follow Recover from failure. Once verification passes, start the worker with `workerctl start` and confirm that `workerctl status` reports `running`. Then enable incoming jobs. The first jobs may take longer while the index catches up; this does not change the requirement to complete verification before restarting the worker.\n\n## Recover from failure\n\nKeep incoming jobs disabled and the worker stopped. Restore both `config.yml` and the index directory from the backups made before this migration. Replacing the binary alone does not restore the old schema. Run `indexctl verify` against the restored index and confirm that it reports the pre-migration schema and `errors: 0`. If restoration or verification fails, leave the worker stopped and contact the incident lead. Restart the worker and enable incoming jobs only after the restored index passes verification.",
+      "expected_output": "An effective, substantial guide, potentially unchanged, with its navigable stages and all necessary safety conditions intact. Readability and safe action take precedence over a dramatic reduction in length or a decorative redesign.",
+      "files": [],
+      "assertions": [
+        "Retains all stage headings and the version-4.2 prerequisite, installed-version check, stop condition for other versions, irreversible schema change, and at-least-30-minute maintenance window.",
+        "Retains backups of both configuration and index, readability and installation-origin checks, storage outside the index directory, and postponement with the worker still running when usable backups cannot be confirmed.",
+        "Preserves disabling jobs before stopping the worker, stopped-status confirmation, both restrictions through validation, and the distinction between disabled incoming jobs and work already in progress.",
+        "Retains read availability with potentially stale indexed state; preserves running the migration once, keeping the terminal open, exit-code branches, and the instruction to contact the incident lead before interrupting a run longer than 10 minutes.",
+        "Preserves the possible up-to-10-minute migration duration without converting it to a guarantee; retains the warning that rerunning may encounter a partially migrated index.",
+        "Preserves verification of `schema: 4.2` and `errors: 0` before starting the worker, running-status confirmation before enabling jobs, and the possible slower initial jobs while the index catches up.",
+        "Preserves restoring both backups while jobs remain disabled and the worker stopped, restored-schema and error verification, escalation if restoration or verification fails, and restart only after successful verification.",
+        "Keeps retained inline code and command spans unchanged and makes each prerequisite and branch understandable at its point of use; does not collapse the guide into cryptic shorthand or remove safety details to meet an invented length target.",
+        "Keeps the effective prose structure rather than adding a redundant diagram, table, executive summary, or concluding recap; adds no new operational step, guarantee, or recovery mechanism.",
+        "Returns only the guide, using the saved voice without intake or an explanation of the edits; unchanged effective wording is an acceptable outcome."
       ]
     }
   ]
