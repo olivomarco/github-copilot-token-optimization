@@ -1,6 +1,9 @@
 :root {
   --md-primary-fg-color: #314659;
   --md-accent-fg-color: #0f766e;
+  --guide-action-gap: 0.5rem;
+  --guide-group-gap: 1.25rem;
+  --guide-section-gap: 2rem;
 }
 
 .md-header {
@@ -23,6 +26,34 @@
 
 .md-typeset .md-button {
   border-radius: 999px;
+}
+
+.md-typeset .guide-entry {
+  display: grid;
+  gap: var(--guide-group-gap);
+  margin-block: var(--guide-group-gap) var(--guide-section-gap);
+}
+
+.md-typeset .guide-entry__actions > p,
+.md-typeset .guide-entry__presentations > p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--guide-action-gap) var(--guide-group-gap);
+  margin: 0;
+}
+
+.md-typeset .guide-entry a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.2rem;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.md-typeset .guide-entry__presentations a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .md-typeset img.homepage-hero {

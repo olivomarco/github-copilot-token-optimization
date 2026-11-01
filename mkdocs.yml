@@ -31,8 +31,8 @@ extra_css:
 nav:
   - Home: index.md
   - Start here:
-      - Why Tokens Matter: 01-why-tokens-matter.md
       - Practical Setup: 10-practical-setup.md
+      - Why Tokens Matter: 01-why-tokens-matter.md
   - Requests and responses:
       - Output Control: 05-output-control.md
       - Prompt Compression: 02-prompt-compression.md

@@ -2,10 +2,23 @@
 
 Spend fewer tokens on unnecessary context, narration, and rework. Keep the information needed to complete and verify the task.
 
+<div class="guide-entry" markdown="1">
+
+<div class="guide-entry__actions" markdown="1">
+
 [Start with Practical Setup](10-practical-setup.md){ .md-button .md-button--primary }
 [Understand token costs](01-why-tokens-matter.md){ .md-button }
-<a class="md-button" href="https://olivomarco.github.io/github-copilot-token-optimization/slides/briefing.html">Practitioner briefing</a>
-<a class="md-button" href="https://olivomarco.github.io/github-copilot-token-optimization/slides/index.html">Full 8-hour workshop</a>
+
+</div>
+
+<div class="guide-entry__presentations" markdown="1">
+
+[Practitioner briefing](https://olivomarco.github.io/github-copilot-token-optimization/slides/briefing.html)
+[Full 8-hour workshop](https://olivomarco.github.io/github-copilot-token-optimization/slides/index.html)
+
+</div>
+
+</div>
 
 Community guidance, not official GitHub or Microsoft policy.
 
@@ -28,7 +41,10 @@ Community guidance, not official GitHub or Microsoft policy.
 
 Ordinary concise language is the default. Caveman remains an option, but shorter narration does not guarantee a cheaper agent task. Read the [scoped evidence and three-arm comparison](05-output-control.md#caveman-optional-output-style) before adopting it for cost savings.
 
-## Quick terms
+<details markdown="1">
+<summary>Terms and reference links</summary>
+
+### Quick terms
 
 - **Input**: prompts plus loaded instructions, files, history, and tool definitions.
 - **Output**: generated tokens; visible prose is only part of an agent's work.
@@ -37,7 +53,7 @@ Ordinary concise language is the default. Caveman remains an option, but shorter
 - **Mode**: the workflow surface, such as Ask, Edit, or Agent; separate from model choice.
 - **Format tax**: layout or extraction noise that can add input without helping the task.
 
-## Reference links
+### Reference links
 
 - [Official GitHub Copilot docs](https://docs.github.com/copilot)
 - [Usage-based billing for organizations and enterprises](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises)
@@ -46,5 +62,7 @@ Ordinary concise language is the default. Caveman remains an option, but shorter
 - [Output-style evidence and sources](05-output-control.md#sources)
 - [Tool catalog and setup](08-mcp-tool-costs.md)
 - [CLI coaching and VS Code analytics](06-workflow-optimization.md#257-close-the-loop-with-chronicle)
+
+</details>
 
 Measurements need a baseline, workload, model, and unit. Token reductions from different mechanisms are not additive; see [Comparisons & Data](09-comparisons-data.md).

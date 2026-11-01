@@ -1,8 +1,10 @@
-# Part 4: Practical Setup
+# Practical Setup
 
 [← Back to Guide](index.md)
 
 Use this checklist to apply the guide. Follow the linked chapters for explanations, evidence, and tool installation.
+
+Start with the concise response default, then apply only the changes relevant to your workload. Step 4 applies to Coding Agent tasks; skip it for other workflows. Use [Step 5](#step-5-review-usage-and-adjust) to review results rather than assuming savings.
 
 ## Step 1: Set a concise response default
 
@@ -88,4 +90,4 @@ Set [budgets, per-user limits, and model policy](12-enterprise-governance.md) ou
 
 ---
 
-**Next:** [Model Selection & Pricing →](11-models-and-pricing.md)
+**Next:** [Find advice for remaining waste](index.md#find-the-source-of-waste) or [review the evidence](09-comparisons-data.md). For model rates and routing, see [Model Selection & Pricing](11-models-and-pricing.md).
